@@ -101,11 +101,11 @@ public class DecisionDownloader {
             id = id.substring(0, id.indexOf(".zip"));
             new_ids.add(id);
 
-            Files.copy(new URL(dec_url).openStream(), Paths.get("../Resources/" + id + ".zip"));
+            Files.copy(new URL(dec_url).openStream(), Paths.get("../Resources/Decisions/" + id + ".zip"));
 
             // Destination Path for the zip
-            String zipDestinationPath = "../Resources/" + id + ".zip";
-            File destinationDirectory = new File("../Resources");
+            String zipDestinationPath = "../Resources/Decisions/" + id + ".zip";
+            File destinationDirectory = new File("../Resources/Decisions");
 
             byte[] buffer = new byte[1024];
             ZipInputStream zis = new ZipInputStream(new FileInputStream(zipDestinationPath));
@@ -139,7 +139,7 @@ public class DecisionDownloader {
         }
 
         // Delete all files that are not .xml's (images, etc)
-        File folder = new File("../Resources");
+        File folder = new File("../Resources/Decisions");
         for (File fi : folder.listFiles()) {
             if (!fi.getName().endsWith(".xml")) {
                 fi.delete();
@@ -207,7 +207,7 @@ public class DecisionDownloader {
         }
 
         // Delete all files that are not .xml's (images, etc)
-        File folder = new File("../Resources");
+        File folder = new File("../Resources/Decisions");
         for (File file : folder.listFiles()) {
             if (!file.getName().endsWith(".xml")) {
                 file.delete();
@@ -254,11 +254,11 @@ public class DecisionDownloader {
     private void downloadDecisionXML(String decisionID) throws IOException {
         // Standard url, where all decisions are stored at the webserver
         String url = "https://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/" + decisionID + ".zip";
-        Files.copy(new URL(url).openStream(), Paths.get("../Resources/" + decisionID + ".zip"));
+        Files.copy(new URL(url).openStream(), Paths.get("../Resources/Decisions/" + decisionID + ".zip"));
 
         // Destination Path for the zip
-        String zipDestinationPath = "../Resources/" + decisionID + ".zip";
-        File destinationDirectory = new File("../Resources");
+        String zipDestinationPath = "../Resources/Decisions/" + decisionID + ".zip";
+        File destinationDirectory = new File("../Resources/Decisions");
 
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipDestinationPath));

@@ -46,18 +46,18 @@ public class DataMapper {
      */
     public DataMapper() {
 
-        //File folder = new File("../Resources");
+        //File folder = new File("../Resources/Decisions");
 
         /*
-        Decision decision_bvg = readDecisionXML("../Resources/KVRE387011001.xml");
-        Decision decision_bgh = readDecisionXML("../Resources/JURE100055033.xml");
-        Decision decision_bvwg = readDecisionXML("../Resources/WBRE202000501.xml");
-        Decision decision_bfh = readDecisionXML("../Resources/STRE202050176.xml");
-        Decision decision_bag = readDecisionXML("../Resources/KARE600028845.xml");
-        Decision decision_bsg = readDecisionXML("../Resources/KSRE120051501.xml");
-        Decision decision_bpatg = readDecisionXML("../Resources/MPRE237120964.xml");
-        Decision decision_gsogdb1 = readDecisionXML("../Resources/KORE300212013.xml");
-        Decision decision_gsogdb2 = readDecisionXML("../Resources/KARE600031798.xml");
+        Decision decision_bvg = readDecisionXML("../Resources/Decisions/KVRE387011001.xml");
+        Decision decision_bgh = readDecisionXML("../Resources/Decisions/JURE100055033.xml");
+        Decision decision_bvwg = readDecisionXML("../Resources/Decisions/WBRE202000501.xml");
+        Decision decision_bfh = readDecisionXML("../Resources/Decisions/STRE202050176.xml");
+        Decision decision_bag = readDecisionXML("../Resources/Decisions/KARE600028845.xml");
+        Decision decision_bsg = readDecisionXML("../Resources/Decisions/KSRE120051501.xml");
+        Decision decision_bpatg = readDecisionXML("../Resources/Decisions/MPRE237120964.xml");
+        Decision decision_gsogdb1 = readDecisionXML("../Resources/Decisions/KORE300212013.xml");
+        Decision decision_gsogdb2 = readDecisionXML("../Resources/Decisions/KARE600031798.xml");
 
         _allDecisionsInDB.add(decision_bvg);
         _allDecisionsInDB.add(decision_bgh);
@@ -91,34 +91,8 @@ public class DataMapper {
         */
 
 
-        //TODO uncomment for person network
-        /*
-        Decision dc = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc2 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc3 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc4 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc5 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc6 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc7 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc8 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc9 = readDecisionXML("../Resources/KVRE.xml");
-        Decision dc10 = readDecisionXML("../Resources/KVRE.xml");
-
-        _allDecisionsInDB.add(dc);
-        _allDecisionsInDB.add(dc2);
-        _allDecisionsInDB.add(dc3);
-        _allDecisionsInDB.add(dc4);
-        _allDecisionsInDB.add(dc5);
-        _allDecisionsInDB.add(dc6);
-        _allDecisionsInDB.add(dc7);
-        _allDecisionsInDB.add(dc8);
-        _allDecisionsInDB.add(dc9);
-        _allDecisionsInDB.add(dc10);
-        */
-
-
         //System.out.println("finished mapping");
-        //Network network = new Network(_allDecisionsInDB);
+        //NetworkController network = new NetworkController(_allDecisionsInDB);
     }
 
 
@@ -126,7 +100,7 @@ public class DataMapper {
 
         int counter = 0;
          for (String dec_id : decisionIDs) {
-            String filepath = "../Resources/" + dec_id + ".xml";
+            String filepath = "../Resources/Decisions/" + dec_id + ".xml";
             try {
                 Decision decision = readDecisionXML(filepath);
                 counter++;
@@ -479,7 +453,7 @@ public class DataMapper {
         //Matcher matcher_aktenzeichen = pattern_aktenzeichen.matcher(text);
 
         while (matcher_fundstellen.find()) {
-            String match = matcher_fundstellen.group();
+            String match = matcher_fundstellen.group(1);
             allMatches.add(match);
         }
 

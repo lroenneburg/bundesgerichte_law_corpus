@@ -26,7 +26,7 @@ public class ElasticConfig {
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("noduser", "ltnod2019"));
 
         //TestServer
-        ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo("localhost:9200").build();
+        ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo("localhost:9200").withSocketTimeout(100000).build();
 
         //RestClientBuilder builder = RestClient.builder(new HttpHost("http://localhost:9200"));
 

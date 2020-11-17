@@ -1,37 +1,145 @@
 package bundesgerichte_law_corpus;
 
 
+import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
+import bundesgerichte_law_corpus.model.FundstellenDictionary;
 import org.jgrapht.Graph;
+import org.jgrapht.alg.clustering.KSpanningTreeClustering;
+import org.jgrapht.alg.clustering.LabelPropagationClustering;
+import org.jgrapht.alg.interfaces.ClusteringAlgorithm;
+import org.jgrapht.alg.scoring.PageRank;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.DefaultAttribute;
+import org.jgrapht.nio.GraphImporter;
 import org.jgrapht.nio.dot.DOTExporter;
+import org.jgrapht.nio.gexf.GEXFExporter;
+import org.jgrapht.nio.gexf.SimpleGEXFImporter;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 /**
  *
  */
-public class Network {
+public class NetworkController {
 
-    public Network(ArrayList<Decision> decisions) {
+    @Autowired
+    DecisionRepository _decisionRepository;
 
-        HashMap<ArrayList<String>, String> fundstellenMapping = createFundstellenMapping();
+    public NetworkController() {
+        //HashMap<ArrayList<String>, String> fundstellenMapping = createFundstellenMapping();
         System.out.println("ookay");
 
-        Graph<String, DefaultEdge> decisionNetwork = createDecisionNetwork(decisions);
+        //createNetwork(decisions);
+
+        //Graph<String, DefaultEdge> decisionNetwork = createDecisionNetwork(decisions);
         //Validator validator = new Validator(docketNumberNetwork, decisions);
 
         //Graph<String, DefaultEdge> entityNetwork = createEntityNetwork(decisions);
         //Validator entity_validator = new Validator(entityNetwork, decisions, "entity");
+
+
+    }
+
+    public Graph<String, DefaultEdge> createNetwork(ArrayList<Decision> decisions) {
+
+        FundstellenDictionary fundstellenDictionary = new FundstellenDictionary();
+
+        Graph<String, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+
+        //for (Decision decision : decisions) {
+        for (int i = 0; i < decisions.size(); i++) {
+            ArrayList<String> docketnumbers = decisions.get(i).getDocketNumber();
+            String dnr = docketnumbers.toString();
+            dnr = dnr.replaceAll("\\[", "");
+            dnr = dnr.replaceAll("\\]", "");
+            graph.addVertex(dnr);
+
+            ArrayList<String> relatedDecisions = decisions.get(i).getOccurringCitations();
+            for (String dec : relatedDecisions) {
+                String dn = fundstellenDictionary.getAktenzeichenForFundstelle(dec);
+                if (dn != null) {
+                    String dockNr = docketnumbers.toString();
+                    dockNr = dockNr.replaceAll("\\[", "");
+                    dockNr = dockNr.replaceAll("\\]", "");
+                    graph.addVertex(dn);
+                    graph.addEdge(dockNr, dn);
+                }
+
+            }
+
+
+        }
+
+        GEXFExporter<String, DefaultEdge> exporter = new GEXFExporter<String, DefaultEdge>();
+        /*
+         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>(v -> {
+            v = v.replace('/', '_');
+            v = v.replace(" ", "_");
+            v = v.replace(",", "_");
+            v = v.replace("(", "_");
+            v = v.replace(")", "_");
+            v = v.replace("[", "");
+            v = v.replace("]", "");
+            v = v.replace("-", "_");
+            v = "_" + v;
+            return v;
+        });
+        */
+        exporter.setVertexAttributeProvider((v) -> {
+            Map<String, Attribute> map = new LinkedHashMap<>();
+            map.put("label", DefaultAttribute.createAttribute(v));
+            return map;
+        });
+        Writer writer = new StringWriter();
+        exporter.exportGraph(graph, writer);
+
+        try {
+            FileWriter myWriter = new FileWriter("../Resources/network_graph.gexf");
+            myWriter.write(writer.toString());
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println(writer.toString());
+        return  graph;
+    }
+
+
+    public void generatePageRank(Graph<String, DefaultEdge> network) {
+
+        //File networkfile = new File("../Resources/network_graph.gexf");
+
+        //Graph<String, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        //SimpleGEXFImporter<String, DefaultEdge> importer = new SimpleGEXFImporter<>();
+
+
+        //importer.importGraph(graph, networkfile);
+        Set<String> vertexes = network.vertexSet();
+        Set<DefaultEdge> defaultEdges = network.edgeSet();
+
+        PageRank<String, DefaultEdge> pageRank = new PageRank<>(network);
+
+        LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<>();
+        Map<String, Double> scores = pageRank.getScores();
+
+        scores.entrySet().stream().sorted(Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
+
+        ArrayList<Entry<String , Double>> score_ranking = new ArrayList<>(sortedMap.entrySet());
+
+        ArrayList<Entry<String, Double>> top_twenty = new ArrayList<>(score_ranking.subList(0, 20));
+
+        System.out.println("loe");
+
     }
 
 
@@ -88,10 +196,6 @@ public class Network {
 
         return fundstelleToDocketNumber;
     }
-
-
-
-
 
 
     /**
@@ -199,7 +303,7 @@ public class Network {
             v = "_" + v;
             return v;
         });
-            exporter.setVertexAttributeProvider((v) -> {
+        exporter.setVertexAttributeProvider((v) -> {
             Map<String, Attribute> map = new LinkedHashMap<>();
             map.put("label", DefaultAttribute.createAttribute(v));
             return map;
@@ -209,5 +313,12 @@ public class Network {
         System.out.println(writer.toString());
 
         return graph;
+    }
+
+    public void generateClustering(Graph<String, DefaultEdge> network) {
+
+        //LabelPropagationClustering<String, DefaultEdge> cluster = new LabelPropagationClustering<>(network);
+
+        System.out.println(".");
     }
 }

@@ -1,10 +1,12 @@
 package bundesgerichte_law_corpus.elasticsearch;
 
 import bundesgerichte_law_corpus.DataMapper;
-import bundesgerichte_law_corpus.Network;
+import bundesgerichte_law_corpus.NetworkController;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.DecisionSection;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.http.MediaType;
@@ -169,9 +171,40 @@ public class DecisionController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String testNetwork() {
-        ArrayList<Decision> decs = _decisionRepository.findByCourtType("BVerfG");
-        Network network = new Network(decs);
+        ArrayList<Decision> decs = new ArrayList<>();
+        ArrayList<Decision> all = (ArrayList<Decision>) _decisionRepository.findAll();
+        //ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
+        //ArrayList<Decision> bgh = _decisionRepository.findByCourtType("BGH");
+        //ArrayList<Decision> bverwg = _decisionRepository.findByCourtType("BVerwG");
+        //ArrayList<Decision> BFH = _decisionRepository.findByCourtType("BFH");
+        //ArrayList<Decision> bag = _decisionRepository.findByCourtType("BAG");
+        //ArrayList<Decision> bsg = _decisionRepository.findByCourtType("BSG");
+        //ArrayList<Decision> bpatg = _decisionRepository.findByCourtType("BPatG");
+
+        decs.addAll(all);
+        //decs.addAll(bgh);
+        NetworkController networkController = new NetworkController();
+        networkController.createNetwork(decs);
         return "Done.";
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/testPageRank",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String testPageRank() {
+        ArrayList<Decision> decs = new ArrayList<>();
+        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
+        decs.addAll(bverfg);
+        //decs.addAll(bgh);
+        NetworkController networkController = new NetworkController();
+        Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
+
+        //NetworkController networkController = new NetworkController();
+        networkController.generatePageRank(network);
+        networkController.generateClustering(network);
+        return "PageRank tested.";
     }
 
 
