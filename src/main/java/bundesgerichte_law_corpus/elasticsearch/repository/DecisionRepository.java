@@ -13,6 +13,8 @@ public interface DecisionRepository extends ElasticsearchRepository<Decision, St
 
     Optional<Decision> findByEcli(String ecli);
 
+    Optional<Decision> findByDocketnumber(String dn);
+
     @Override
     long count();
 

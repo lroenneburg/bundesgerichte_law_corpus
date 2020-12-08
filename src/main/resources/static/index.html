@@ -12,6 +12,7 @@
 
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!-- CSS for this template -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
@@ -33,12 +34,12 @@
 
     <!-- Sidebar -->
     <div class="bg-light border-right" id="sidebar-wrapper">
-      <div class="sidebar-heading">
+      <a style="text-decoration: none;" href="index.html" class="sidebar-heading">
         <div class="sidebar-heading-logo"></div>
         <div class="sidebar-heading-name">Universität Hamburg</div>
-      </div>
+      </a>
       <div class="list-group list-group-flush">
-        <a href="#" class="list-group-item list-group-item-action bg-light">Auswertung XY</a>
+        <a href="/cluster.html" class="list-group-item list-group-item-action bg-light">Cluster</a>
         <a href="#" class="list-group-item list-group-item-action bg-light">Element 2</a>
         <a href="#" class="list-group-item list-group-item-action bg-light">Information 3</a>
         <a href="#" class="list-group-item list-group-item-action bg-light">Element 4</a>
@@ -52,7 +53,8 @@
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" id="header">
         <button class="btn btn-primary" id="menu-toggle">Menü</button>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -63,14 +65,29 @@
               <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             -->
-            <li class="nav-item">
-              <a class="nav-link" href="https://github.com/lroenneburg/ba_engineering" id="header-github-link"> <div class="github-logo"></div> <div style="padding-left: .3rem;">GitHub</div></a>
+            <li style="padding-top: .5rem; margin-right: 40px;" class="nav-item active">
+              <label for="suche">Suche</label>
+              <input class="search-feld" type="search" id="suche" placeholder="Aktenzeichen..." onkeydown="searchAZByEnter()">
+              <button type="submit" onclick="searchAZ()"><i class="fa fa-search"></i></button> 
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" id="header-thesis-link"><div class="pdf-logo"></div> <div style="padding-left: .3rem;">Thesis</div></a>
+              <a class="nav-link" href="https://github.com/lroenneburg/bundesgerichte_law_corpus"
+                id="header-github-link">
+                <div class="github-logo"></div>
+                <div style="padding-left: .3rem;">GitHub</div>
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" id="header-about-link"><div class="about-logo"></div> <div style="padding-left: .3rem;">About</div></a>
+              <a class="nav-link" href="#" id="header-thesis-link">
+                <div class="pdf-logo"></div>
+                <div style="padding-left: .3rem;">Thesis</div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="header-about-link">
+                <div class="about-logo"></div>
+                <div style="padding-left: .3rem;">About</div>
+              </a>
             </li>
             <!--
             <li class="nav-item dropdown">
@@ -90,9 +107,11 @@
       </nav>
 
       <div class="container-fluid">
-        <h2 class="mt-4">Analyse eines juristischen Entscheidungscorpus mit Methoden der Netzwerkforschung und Sprachtechnologie</h2>
+        <h2 class="mt-4">Analyse eines juristischen Entscheidungscorpus mit Methoden der Netzwerkforschung und
+          Sprachtechnologie</h2>
         <h3 class="mt-4"> Bachelorthesis von Lennart Rönneburg</h3>
-        <p>Hier steht dann ein Text oder ein sonstiger Content für die Website. Momentan steht hier erstmal ein Platzhalter damit ein bisschen Text auf der Seite steht.</p>
+        <p>Hier steht dann ein Text oder ein sonstiger Content für die Website. Momentan steht hier erstmal ein
+          Platzhalter damit ein bisschen Text auf der Seite steht.</p>
         <p>Hier steht noch ein bisschen mehr Text um noch mehr Text auf der Seite anzuzeigen.</p>
         <p id="dbAmount">Die Datenbankgröße kann zurzeit nicht abgerufen werden.</p>
       </div>
@@ -104,7 +123,7 @@
 
   <!-- Menu Toggle Script -->
   <script>
-    $("#menu-toggle").click(function(e) {
+    $("#menu-toggle").click(function (e) {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
     });

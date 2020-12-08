@@ -5,18 +5,19 @@ import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.FundstellenDictionary;
 import org.jgrapht.Graph;
-import org.jgrapht.alg.clustering.KSpanningTreeClustering;
-import org.jgrapht.alg.clustering.LabelPropagationClustering;
 import org.jgrapht.alg.interfaces.ClusteringAlgorithm;
 import org.jgrapht.alg.scoring.PageRank;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.DefaultAttribute;
-import org.jgrapht.nio.GraphImporter;
 import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.gexf.GEXFExporter;
-import org.jgrapht.nio.gexf.SimpleGEXFImporter;
+import org.jgrapht.nio.json.JSONEventDrivenImporter;
+import org.jgrapht.nio.json.JSONExporter;
+import org.nlpub.watset.graph.ChineseWhispers;
+import org.nlpub.watset.graph.MarkovClustering;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
@@ -24,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 /**
  *
@@ -79,43 +79,63 @@ public class NetworkController {
 
         }
 
-        GEXFExporter<String, DefaultEdge> exporter = new GEXFExporter<String, DefaultEdge>();
-        /*
-         DOTExporter<String, DefaultEdge> exporter = new DOTExporter<>(v -> {
-            v = v.replace('/', '_');
-            v = v.replace(" ", "_");
-            v = v.replace(",", "_");
-            v = v.replace("(", "_");
-            v = v.replace(")", "_");
-            v = v.replace("[", "");
-            v = v.replace("]", "");
-            v = v.replace("-", "_");
-            v = "_" + v;
-            return v;
-        });
-        */
-        exporter.setVertexAttributeProvider((v) -> {
-            Map<String, Attribute> map = new LinkedHashMap<>();
-            map.put("label", DefaultAttribute.createAttribute(v));
-            return map;
-        });
-        Writer writer = new StringWriter();
-        exporter.exportGraph(graph, writer);
-
-        try {
-            FileWriter myWriter = new FileWriter("../Resources/network_graph.gexf");
-            myWriter.write(writer.toString());
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //System.out.println(writer.toString());
+        saveGraphToFile(graph, "../Resources/network_graph.gexf");
         return  graph;
     }
 
+    public void saveGraphToFile(Graph<String, DefaultEdge> graph, String path) {
 
-    public void generatePageRank(Graph<String, DefaultEdge> network) {
+        if (path.contains(".json")) {
+            JSONExporter<String, DefaultEdge> jsonExporter = new JSONExporter();
+
+            jsonExporter.setVertexAttributeProvider((v) -> {
+                Map<String, Attribute> map = new LinkedHashMap<>();
+                map.put("label", DefaultAttribute.createAttribute(v));
+                return map;
+            });
+
+            Writer writer1 = new StringWriter();
+            jsonExporter.exportGraph(graph, writer1);
+
+            try {
+                FileWriter myWriter = new FileWriter(path);
+                myWriter.write(writer1.toString());
+                myWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        else if (path.contains(".gexf")) {
+            GEXFExporter<String, DefaultEdge> exporter = new GEXFExporter<>();
+
+            exporter.setVertexAttributeProvider((v) -> {
+                Map<String, Attribute> map = new LinkedHashMap<>();
+                map.put("label", DefaultAttribute.createAttribute(v));
+                return map;
+            });
+            Writer writer = new StringWriter();
+            exporter.exportGraph(graph, writer);
+
+            try {
+                FileWriter myWriter = new FileWriter(path);
+                myWriter.write(writer.toString());
+                myWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //System.out.println(writer.toString());
+        }
+        else {
+            System.out.println("Dateityp nicht erkennbar. Graph kann nicht exportiert werden.");
+        }
+
+
+    }
+
+
+    public ArrayList<Entry<String, Double>> generatePageRank(Graph<String, DefaultEdge> network) {
 
         //File networkfile = new File("../Resources/network_graph.gexf");
 
@@ -139,8 +159,40 @@ public class NetworkController {
         ArrayList<Entry<String, Double>> top_twenty = new ArrayList<>(score_ranking.subList(0, 20));
 
         System.out.println("loe");
-
+        return score_ranking;
     }
+
+    public List<Set<String>> generateClusteringWithCW(Graph<String, DefaultEdge> network) {
+
+        // Chinese Whispers
+        Graph<String, DefaultEdge> undirectedGraph = new AsUndirectedGraph(network);
+        ChineseWhispers<String, DefaultEdge> chineseWhispers = ChineseWhispers.<String, DefaultEdge>builder().apply(undirectedGraph);
+        ClusteringAlgorithm.Clustering<String> clustering = chineseWhispers.getClustering();
+        List<Set<String>> clusters = clustering.getClusters();
+        Collections.sort(clusters, (o1, o2) -> Integer.valueOf(o2.size()).compareTo(o1.size()));
+        System.out.println("CW Clustering completed.");
+
+        return clusters;
+    }
+
+    public List<Set<String>> generateClusteringwithMCL(Graph<String, DefaultEdge> network) {
+
+        // Markov-Clustering
+        Graph<String, DefaultEdge> undirectedGraph = new AsUndirectedGraph(network);
+
+        //ChineseWhispers<String, DefaultEdge> chineseWhispers = ChineseWhispers.<String, DefaultEdge>builder().apply(undirectedGraph);
+        MarkovClustering<String, DefaultEdge> markovClustering = MarkovClustering.<String, DefaultEdge>builder().apply(undirectedGraph);
+        ClusteringAlgorithm.Clustering<String> clustering_mcl = markovClustering.getClustering();
+        List<Set<String>> clusters = clustering_mcl.getClusters();
+        Collections.sort(clusters, (o1, o2) -> Integer.valueOf(o2.size()).compareTo(o1.size()));
+        System.out.println("MCL Clustering completed.");
+
+        return clusters;
+    }
+
+
+
+
 
 
     private HashMap<ArrayList<String>, String> createFundstellenMapping() {
@@ -313,12 +365,5 @@ public class NetworkController {
         System.out.println(writer.toString());
 
         return graph;
-    }
-
-    public void generateClustering(Graph<String, DefaultEdge> network) {
-
-        //LabelPropagationClustering<String, DefaultEdge> cluster = new LabelPropagationClustering<>(network);
-
-        System.out.println(".");
     }
 }

@@ -70,6 +70,11 @@ public class Decision {
     @Field(type = FieldType.Text)
     private ArrayList<String> occurringJudges;
 
+    @Field(type = FieldType.Double)
+    private double pageRank;
+
+    @Field(type = FieldType.Text)
+    private String clusterName;
     /**
      * Creates a decision Object with all relevant Information related to the decision
      * @param decisionId The unique identifier of the decision
@@ -116,6 +121,8 @@ public class Decision {
         this.url = url;
         this.occurringCitations = occurringCitations;
         this.occurringJudges = occurringJudges;
+        this.pageRank = 0.0;
+        this.clusterName = "";
     }
 
 
@@ -271,5 +278,21 @@ public class Decision {
      */
     public ArrayList<String> getOccurringJudges() {
         return occurringJudges;
+    }
+
+    public double getPageRank() {
+        return pageRank;
+    }
+
+    public void setPageRank(double pageRank) {
+        this.pageRank = pageRank;
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

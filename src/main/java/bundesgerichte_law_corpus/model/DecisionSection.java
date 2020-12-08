@@ -35,4 +35,12 @@ public class DecisionSection {
     public String getText() {
         return _text;
     }
+
+    /**
+     * Sets the Text of this section
+     * @param _recital the recital
+     */
+    public void setRecital(int recital) {
+        this._recital = recital;
+    }
 }

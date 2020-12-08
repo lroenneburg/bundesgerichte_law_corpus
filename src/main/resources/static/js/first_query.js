@@ -24,3 +24,18 @@ document.addEventListener("DOMContentLoaded", function (e) {
     document.getElementById("dbAmount").innerHTML = "Zurzeit sind " + totalAmountOfDecisionsInDatabase + " Gerichtsentscheidungen in der Datenbank.";
 
 });
+
+
+function searchAZ() {
+    var value = document.getElementsByClassName("search-feld")[0].value;
+    var url = "http://localhost:8080/decision?az=" + value;
+    document.location.replace(url);
+
+}
+
+function searchAZByEnter() {
+    if(event.key === 'Enter') {
+        searchAZ();
+    }
+    
+}

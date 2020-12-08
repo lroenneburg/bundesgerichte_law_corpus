@@ -1,23 +1,29 @@
 package bundesgerichte_law_corpus.elasticsearch;
 
+import bundesgerichte_law_corpus.Analysis;
 import bundesgerichte_law_corpus.DataMapper;
 import bundesgerichte_law_corpus.NetworkController;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.DecisionSection;
 import org.jgrapht.Graph;
+import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.MediaType;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class DecisionController {
@@ -190,10 +196,93 @@ public class DecisionController {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/testPageRank",
+            path = "/computeClusters",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String testPageRank() {
+        ArrayList<Decision> decs = new ArrayList<>();
+        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
+        decs.addAll(bverfg);
+        HashMap<String, Decision> decMap = new HashMap<>();
+        for (Decision d : decs) {
+            String docketNumber = d.getDocketNumber().toString();
+            docketNumber = docketNumber.replaceAll("\\[", "");
+            docketNumber = docketNumber.replaceAll("\\]", "");
+            decMap.put(docketNumber, d);
+        }
+
+
+        //decs.addAll(bgh);
+        NetworkController networkController = new NetworkController();
+        Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
+
+        //NetworkController networkController = new NetworkController();
+        networkController.generatePageRank(network);
+        List<Set<String>> cw_cluster = networkController.generateClusteringWithCW(network);
+        //List<Set<String>> mcl_clusters = networkController.generateClusteringwithMCL(network);
+
+        ArrayList<Graph<String, DefaultEdge>> cluster_graphs = new ArrayList<>();
+
+        for (Set<String> cluster : cw_cluster) {
+            if (cluster.size() >= 3) {
+
+                Set<String> allVertices = network.vertexSet();
+                Set<DefaultEdge> allEdges = network.edgeSet();
+
+                Set<String> clusterVertices = new HashSet<>();
+                ArrayList<DefaultEdge> clusterEdges = new ArrayList<>();
+
+
+                for (String vertex : allVertices) {
+                    if (cluster.contains(vertex)) {
+                        clusterVertices.add(vertex);
+                    }
+                }
+
+                Graph<String, DefaultEdge> cluster_subgraph = new AsSubgraph(network, clusterVertices, null);
+                cluster_graphs.add(cluster_subgraph);
+            }
+
+        }
+
+        File folder = new File("src/main/resources/networks");
+
+        for (File file : folder.listFiles()) {
+            if (file.isFile()) {
+                file.delete();
+            }
+        }
+
+        int amount = 0;
+        for (int i = 0; i < cluster_graphs.size(); i++) {
+            //String regular_path = "../Resources/Cluster/";
+            String regular_path = "src/main/resources/networks/";
+            amount++;
+
+            Set<String> vertexes = cluster_graphs.get(i).vertexSet();
+            for (String s : vertexes) {
+                Decision decision = decMap.get(s);
+                if (decision != null) {
+                    decision.setClusterName(String.valueOf(i));
+                    //TODO _decisionRepository.save(decision);
+                }
+
+            }
+
+            String path = regular_path + "graph_cluster_" + i + ".json ";
+
+            networkController.saveGraphToFile(cluster_graphs.get(i), path);
+        }
+
+        return amount + " Clusters computed";
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/doAnalysis",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String doAnalysis() {
         ArrayList<Decision> decs = new ArrayList<>();
         ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
         decs.addAll(bverfg);
@@ -201,10 +290,23 @@ public class DecisionController {
         NetworkController networkController = new NetworkController();
         Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
 
-        //NetworkController networkController = new NetworkController();
-        networkController.generatePageRank(network);
-        networkController.generateClustering(network);
-        return "PageRank tested.";
+        Analysis analysis = new Analysis(network);
+
+        return "Analysis done.";
+    }
+
+
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/decision",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Optional<Decision> getDecision(@RequestParam String docketnumber, ModelMap model) {
+
+        Optional<Decision> decision = _decisionRepository.findByDocketnumber(docketnumber);
+        model.addAttribute("message", "hello");
+        return decision;
     }
 
 
