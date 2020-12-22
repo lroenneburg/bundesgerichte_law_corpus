@@ -1,0 +1,40 @@
+{
+    "creator": "JGraphT JSON Exporter",
+    "version": "1",
+    "nodes": [
+        {
+            "id": "1",
+            "label": "1 BvL 9\/60"
+        },
+        {
+            "id": "2",
+            "label": "1 BvL 6\/12"
+        },
+        {
+            "id": "3",
+            "label": "1 BvL 7\/10"
+        },
+        {
+            "id": "4",
+            "label": "1 BvL 10\/57"
+        }
+    ],
+    "edges": [
+        {
+            "source": "3",
+            "target": "4"
+        },
+        {
+            "source": "3",
+            "target": "1"
+        },
+        {
+            "source": "2",
+            "target": "4"
+        },
+        {
+            "source": "2",
+            "target": "1"
+        }
+    ]
+}

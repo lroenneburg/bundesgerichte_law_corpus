@@ -1,0 +1,1 @@
+{"creator":"JGraphT JSON Exporter","nodes":[{"pageRank":"NID","id":"1","label":"IX ZR 98/08","court":"NID"},{"pageRank":"NID","id":"2","label":"IX ZR 90/08","court":"NID"},{"pageRank":0.0012132101168510511,"id":"3","label":"IX ZR 111/08","court":"BGH"}],"edges":[{"source":"3","target":"1"},{"source":"3","target":"2"}],"version":"1"}

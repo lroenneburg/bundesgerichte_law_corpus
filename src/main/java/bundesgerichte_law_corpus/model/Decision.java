@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 
 @Document(indexName = "bundesgerichte_decisions", type = "decision")
+//@Document(indexName = "law-decisions-test", type = "decision")
 /**
  * This class maps a decision on a Java Object and stores all the information of the Decision-XML and additionally
  * the extracted Information like occurring citations and involved Judges

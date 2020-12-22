@@ -23,15 +23,7 @@ import java.util.regex.Pattern;
 public class DataMapper {
 
     // Regular Expression which finds all types of docketNumbers
-    private String _aktenzeichenRegEx = "(((VGS|RiZ\\s?s?\\(R\\)|KZR|VRG|RiZ|EnRB|StbSt\\s?\\(B\\)|AnwZ\\s?\\(Brfg\\)|RiSt|PatAnwSt\\s?\\(R\\)|AnwZ\\s?\\(B\\)|PatAnwZ|EnVZ|AnwSt\\s?\\(B\\)|NotSt\\s?\\(Brfg\\)|KVZ|KZB|AR\\s?\\(Ri\\)|NotZ\\s?\\(Brfg\\)|RiSt\\s?\\(B\\)|AnwZ\\s?\\(P\\)|EnZB|RiSt\\s?\\(R\\)|NotSt\\s?\\(B\\)|AnwSt|WpSt\\s?\\(R\\)|KVR|AR\\s?\\(Kart\\)|EnZR|StbSt\\s?\\(R\\)|WpSt\\s?\\(B\\)|KZA|AR\\s?\\(Enw\\)|AnwSt\\s?\\(R\\)|KRB|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(B\\)|EnVR|AnwZ|NotZ|EnZA|AR)\\s\\d+/\\d+)|" +
-            "((GSZ|LwZB|WpSt\\s?\\(B\\)|AnwZ|LwZR|KVZ|EnRB|PatAnwSt\\s?\\(B\\)|ARP|VGS|WpSt\\s?\\(R\\)|RiSt\\s?\\(B\\)|EnZA|KRB|AnwSt\\s?\\(R\\)|NotSt\\s?\\(Brfg\\)|EnVR|LwZA|ZB|AR\\s?\\(Vollz\\)|StB|ZR|AR\\s?\\(VS\\)|BJs|BLw|NotZ\\s?\\(Brfg\\)|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(R\\)|AK|RiZ|PatAnwZ|ARs|StbSt\\s?\\(R\\)|VRG|NotSt\\s?\\(B\\)|AR\\s?\\(Enw\\)|AR\\s?\\(VZ\\)|StE|KVR|AR\\s?\\(Ri\\)|AR|AnwSt|NotZ|StbSt\\s?\\(B\\)|StR|ZA|AnwZ\\s?\\(B\\)|EnZR|AR\\s?\\(Kart\\)|GSSt|AnwZ\\s?\\(P\\)|ZR\\s?\\(Ü\\)|AnwZ\\s?\\(Brfg\\)|KZB|BGns|KZR|RiSt|KZA|BAusl|AnwSt\\s?\\(B\\)|BGs|RiZ\\s?\\(R\\)|EnZB|RiSt\\s?\\(R\\)|ARZ|EnVZ)\\s\\d+/\\d+)|" +
-            "([I+|IV|V|VI|VII|VIII|IX|X|XI|XII|1-6]+[a-z]?\\s[A-Za-z\\(\\)]{2,20}\\s\\d+/\\d\\d))";
-
-    //private String _referenceNumberRegex = "BVerfGE\\s[0-9]+,\\s[0-9]+";
-
-    //private String _citationRegEx = "BVerfGE\\s*\\d{1,3},\\s\\d{1,3}(?:.?\\s*?[(<\\[].*?[\\])>])?(?:[,;]\\s*?\\d{1,3},\\s*?\\d{1,3}(?:.?\\s*?[(<\\[].*?[\\])>])?)*";
-
-    private String _citationRegEx = "\\([^\\(]*\\s((RGZ|RGSt|RAG|PrOVG|RVA|RFH|StGH|SZ|KH|RG|BGE|BGHZ|BGHSt|BAGE|BVerwGE|BSGE|BFHE|BVerfGE|SZ|SSt|VfSlg|BGE|AbfallR|AcP|AfkKR|AfP|AG|AiB|AktStR|ANAZAR|AnwBl|AöR|AOStB|ArbR|ArbRB|ARSP|ArztR|ASR|AuAS|A\\&R|AUR|AuR|AVR|AW\\-Prax|BauR|BayVBl|BB|BKR|Blutalkohol|Br|BRAK\\-Mitt|BtPrax|CCLR|CCZ|CR|CSR|DAJV\\sNewsletter|DAJV|DAR|DB|DGVZ|DNotZ|DÖD|DÖV|DPJZ|DRiZ|DS|DSB|DStR|DuD|DVBl|DZWIR|EnWZ|ErbR|ErbStB|ErtrStB|EuGRZ|EuR|EurUP|EUUStB|EuZA|EuZW|EWeRK|EWiR|EWS|FA|FamFR|FamRB|FamRK|FamRZ|FF|Food|FoodR|Food\\sPrax|FR|FuR|FuS|GA|GewArch|GesR|GmbHR|GmbHStB|GPR|GRUR|GRUR\\-Int|GRUR\\-Prax|GSZ|GuP|GWR|HFR|HRRS|I\\+E|IHR|InfAuslR|IAR|info\\salso|InTeR|IPrax|IPRB|IR|IRZ|IStR|ITRB|IWRZ|JA|JAmt|JOR|JR|JRP|JURA|JurBüro|JuS|JZ|KJ|KommJur|Kriminalistik|KritV|KSzW|KTS|KuR|K\\&R|KUR|LKV|LMuR|MarkenR|MIR|MDR|MedR|medstra|MietRB|ML|MMR|MPR|MR\\-Int|MschrKrim|MwStR|NdsVBl|NdsVBl\\.|NJ|NJOZ|NJW|NJW-RR|NordÖR|NotBZ|NPLY|npoR|NStZ|N\\&R|NuR|NVwZ|NWVBl|NZA|NZBau|NZFam|NZG|NZI|NZKart|NZM|NZS|NZV|NZWehrr|NZWiSt|öAT|OER|PersV|PflR|PharmR|Praxis\\sder\\sRechtspsychologie|RabelsZ|RAW|RdA|RdE|RdFin|RdL|RdJB|RdTW|RDV|RechtsMed|ree|RiA|JaR|RIW|RNotZ|RohR|Rpfleger|RphZ|RPG|RRa|RT|R\\&P|RuP|r\\+s|RuZ|RW|SächsVBl|SchiedsAZ|SchiedsVZ|SchuR|SchulR\\sheute|SGb|SR|SpuRt|STAAT|StAZ|SteuK|StoffR|StraFo|StudZR|StuW|StV|SVR|ThürVBl|TranspR|Ubg|UFITA|UStB|UPR|UR|VBlBW|VergabeR|VersR|VERW|VerwA|VIA|VR|VRS|VRÜ|VuR|VSSR|Vollstr|WiRO|WissR|wistra|WM|WRP|W\\+B|WuW|ZaöRV|ZAR|ZAT|ZBB|ZBR|ZChinR|ZD|ZErb|ZESAR|ZEuP|ZEuS|ZEV|ZevKR|ZfA|ZfB|ZfBR|ZFE|ZfF|ZfgG|ZfPR|ZfIR|ZfPW|ZfRsoz|zfs|ZfSH\\/SGB|ZfU|ZFW|ZfWG|ZfZ|ZG|ZGE|ZGR|ZGS|ZHR|ZIAS|ZIP|ZIS|IWRZ|ZJapanR|ZJS|ZKJ|ZLR|ZLW|ZMGR|ZMR|ZNR|ZNER|ZParl|ZRP|ZRG|ZStV|ZStW|ZTR|ZUM|ZUR|ZVertriebsR|ZVI|ZVR|ZVertriebsR|ZWeR|ZWE|ZWH)\\s[0-9]+\\, [0-9]+)[^\\)]*\\)";
+    private String _citationRegEx = "(((VGS|RiZ\\s?s?\\(R\\)|KZR|VRG|RiZ|EnRB|StbSt\\s?\\(B\\)|AnwZ\\s?\\(Brfg\\)|RiSt|PatAnwSt\\s?\\(R\\)|AnwZ\\s?\\(B\\)|PatAnwZ|EnVZ|AnwSt\\s?\\(B\\)|NotSt\\s?\\(Brfg\\)|KVZ|KZB|AR\\s?\\(Ri\\)|NotZ\\s?\\(Brfg\\)|RiSt\\s?\\(B\\)|AnwZ\\s?\\(P\\)|EnZB|RiSt\\s?\\(R\\)|NotSt\\s?\\(B\\)|AnwSt|WpSt\\s?\\(R\\)|KVR|AR\\s?\\(Kart\\)|EnZR|StbSt\\s?\\(R\\)|WpSt\\s?\\(B\\)|KZA|AR\\s?\\(Enw\\)|AnwSt\\s?\\(R\\)|KRB|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(B\\)|EnVR|AnwZ|NotZ|EnZA|AR)\\s\\d+/\\d+)|((GSZ|LwZB|WpSt\\s?\\(B\\)|AnwZ|LwZR|KVZ|EnRB|PatAnwSt\\s?\\(B\\)|ARP|VGS|WpSt\\s?\\(R\\)|RiSt\\s?\\(B\\)|EnZA|KRB|AnwSt\\s?\\(R\\)|NotSt\\s?\\(Brfg\\)|EnVR|LwZA|ZB|AR\\s?\\(Vollz\\)|StB|ZR|AR\\s?\\(VS\\)|BJs|BLw|NotZ\\s?\\(Brfg\\)|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(R\\)|AK|RiZ|PatAnwZ|ARs|StbSt\\s?\\(R\\)|VRG|NotSt\\s?\\(B\\)|AR\\s?\\(Enw\\)|AR\\s?\\(VZ\\)|StE|KVR|AR\\s?\\(Ri\\)|AR|AnwSt|NotZ|StbSt\\s?\\(B\\)|StR|AZR|ZA|AnwZ\\s?\\(B\\)|EnZR|AR\\s?\\(Kart\\)|GSSt|AnwZ\\s?\\(P\\)|ZR\\s?\\(Ü\\)|AnwZ\\s?\\(Brfg\\)|KZB|BGns|KZR|RiSt|KZA|BAusl|AnwSt\\s?\\(B\\)|BGs|RiZ\\s?\\(R\\)|EnZB|RiSt\\s?\\(R\\)|ARZ|EnVZ)\\s\\d+/\\d+)|([I+|IV|V|VI|VII|VIII|IX|X|XI|XII|0-9]+[a-z]?\\s[A-Za-z\\(\\)]{1,20}\\s\\d+/\\d\\d))|[A-Z]{1}\\s[0-9]+\\s[A-Z]+\\s\\d+\\/\\d+\\s[A-Z]{1}|C\\-\\d+\\/\\d+|(RGZ|RGSt|RAG|PrOVG|RVA|RFH|StGH|SZ|KH|RG|BGE|B|BGHZ|BGHSt|BAGE|BVerwGE|BRAK-Mitt\\.|BSGE|BFHE|BVerfGE|BVerfGK|SZ|SSt|VfSlg|BGE|AbfallR|AcP|AfkKR|AfP|AG|AiB|AktStR|ANAZAR|AnwBl|AöR|AOStB|ArbR|ArbRB|ARSP|ArztR|ASR|AuAS|A\\&R|AUR|AuR|AVR|AW\\-Prax|BauR|BayVBl|BB|BKR|Blutalkohol|Br|BRAK\\-Mitt|BtPrax|CCLR|CCZ|CR|CSR|DAJV\\sNewsletter|DAJV|DAR|DB|DGVZ|DNotZ|DÖD|DÖV|DPJZ|DRiZ|DS|DSB|DStR|DuD|DVBl|DZWIR|EnWZ|ErbR|ErbStB|ErtrStB|EuGRZ|EuR|EurUP|EUUStB|EuZA|EuZW|EWeRK|EWiR|EWS|FA|FamFR|FamRB|FamRK|FamRZ|FF|FGPrax|Food|FoodR|Food\\sPrax|FR|FuR|FuS|GA|GewArch|GesR|GmbHR|GmbHStB|GPR|GRUR|GRUR\\-Int|GRUR\\-Prax|GSZ|GuP|GWR|HFR|HRRS|I\\+E|IHR|InfAuslR|IAR|info\\salso|InTeR|IPrax|IPRB|IR|IRZ|IStR|ITRB|IWRZ|JA|JAmt|JOR|JR|JRP|JURA|JurBüro|JuS|JFG|JZ|KJ|KommJur|Kriminalistik|KritV|KSzW|KTS|KuR|K\\&R|KUR|LKV|LMuR|MarkenR|MIR|MDR|MedR|medstra|MietRB|ML|MMR|MPR|MR\\-Int|MschrKrim|MwStR|NdsVBl|NdsVBl\\.|NJ|NJOZ|NJW|NJW-RR|NordÖR|NotBZ|NPLY|npoR|NStZ|NStZ-RR|N\\&R|NuR|NVwZ|NWVBl|NZA|NZBau|NZFam|NZG|NZI|NZKart|NZM|NZS|NZV|NZWehrr|NZWiSt|öAT|OER|PersV|PflR|PharmR|Praxis\\sder\\sRechtspsychologie|RabelsZ|RAW|RdA|RdE|RdFin|RdL|RdJB|RdTW|RDV|RechtsMed|ree|RiA|JaR|RIW|RNotZ|RohR|Rpfleger|RphZ|RPG|RRa|RT|R\\&P|RuP|r\\+s|RuZ|RW|SächsVBl|SchiedsAZ|SchiedsVZ|SchuR|SchulR\\sheute|SGb|SR|SpuRt|STAAT|StAZ|SteuK|StoffR|StraFo|StudZR|StuW|StV|SVR|ThürVBl|TranspR|Ubg|UFITA|UStB|UPR|UR|VBlBW|VergabeR|VersR|VERW|VerwA|VIA|VR|VRS|VRÜ|VuR|VSSR|Vollstr|WiRO|WissR|wistra|WM|WRP|W\\+B|WuW|ZaöRV|ZAR|ZAT|ZBB|ZBR|ZChinR|ZD|ZErb|ZESAR|ZEuP|ZEuS|ZEV|ZevKR|ZfA|ZfB|ZfBR|ZFE|ZfF|ZfgG|ZfPR|ZfIR|ZfPW|ZfRsoz|zfs|ZfSH\\/SGB|ZfU|ZFW|ZfWG|ZfZ|ZG|ZGE|ZGR|ZGS|ZHR|ZIAS|ZIP|ZIS|IWRZ|ZJapanR|ZJS|ZKJ|ZLR|ZLW|ZMGR|ZMR|ZNR|ZNER|ZParl|ZRP|ZRG|ZStV|ZStW|ZTR|ZUM|ZUR|ZVertriebsR|ZVI|ZVR|ZVertriebsR|ZWeR|ZWE|ZWH|ZInsO|NVwZ-RR|RGZ|BGHReport)\\s*\\d{1,6},\\s\\d{1,6}(?:.?\\s*?[(<\\[].*?[\\])>])?(?:[,]\\s*?\\d{1,6})?(?:[;]\\s*?\\d{1,6},\\s*?\\d{1,6}(?:.?\\s*?[(<\\[].*?[\\])>]|[,]\\s*?\\d{1,6})?)*";
 
 
     ArrayList<Decision> _allDecisionsInDB = new ArrayList<>();
@@ -45,61 +37,13 @@ public class DataMapper {
      * @throws InterruptedException
      */
     public DataMapper() {
-
-        //File folder = new File("../Resources/Decisions");
-
-        /*
-        Decision decision_bvg = readDecisionXML("../Resources/Decisions/KVRE387011001.xml");
-        Decision decision_bgh = readDecisionXML("../Resources/Decisions/JURE100055033.xml");
-        Decision decision_bvwg = readDecisionXML("../Resources/Decisions/WBRE202000501.xml");
-        Decision decision_bfh = readDecisionXML("../Resources/Decisions/STRE202050176.xml");
-        Decision decision_bag = readDecisionXML("../Resources/Decisions/KARE600028845.xml");
-        Decision decision_bsg = readDecisionXML("../Resources/Decisions/KSRE120051501.xml");
-        Decision decision_bpatg = readDecisionXML("../Resources/Decisions/MPRE237120964.xml");
-        Decision decision_gsogdb1 = readDecisionXML("../Resources/Decisions/KORE300212013.xml");
-        Decision decision_gsogdb2 = readDecisionXML("../Resources/Decisions/KARE600031798.xml");
-
-        _allDecisionsInDB.add(decision_bvg);
-        _allDecisionsInDB.add(decision_bgh);
-        _allDecisionsInDB.add(decision_bvwg);
-        _allDecisionsInDB.add(decision_bfh);
-        _allDecisionsInDB.add(decision_bag);
-        _allDecisionsInDB.add(decision_bsg);
-        _allDecisionsInDB.add(decision_bpatg);
-        _allDecisionsInDB.add(decision_gsogdb1);
-        _allDecisionsInDB.add(decision_gsogdb2);
-        System.out.println("all tested");
-        */
-
-        /*
-
-        int counter = 0;
-
-        for (File dec_file : folder.listFiles()) {
-            try {
-                Decision decision = readDecisionXML(dec_file.getCanonicalPath());
-                _allDecisionsInDB.add(decision);
-                counter++;
-
-                if (counter % 100 == 0) {
-                    System.out.println(counter + " Decisions processed");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        */
-
-
-        //System.out.println("finished mapping");
-        //NetworkController network = new NetworkController(_allDecisionsInDB);
     }
 
 
     public ArrayList<Decision> mapDecisionObjects(ArrayList<String> decisionIDs) {
 
         int counter = 0;
-         for (String dec_id : decisionIDs) {
+        for (String dec_id : decisionIDs) {
             String filepath = "../Resources/Decisions/" + dec_id + ".xml";
             try {
                 Decision decision = readDecisionXML(filepath);
@@ -432,15 +376,6 @@ public class DataMapper {
     }
 
 
-
-
-
-
-
-
-
-
-
     /**
      * @param text
      * @return
@@ -453,8 +388,51 @@ public class DataMapper {
         //Matcher matcher_aktenzeichen = pattern_aktenzeichen.matcher(text);
 
         while (matcher_fundstellen.find()) {
-            String match = matcher_fundstellen.group(1);
-            allMatches.add(match);
+            String match = matcher_fundstellen.group();
+            if (match.contains(";")) {
+                String pre = matcher_fundstellen.group(7);
+                String[] split = match.split(";");
+                for (int i = 1; i < split.length; i++) {
+                    String sec = split[i].trim();
+                    String fs = pre + " " + sec;
+                    if (fs.matches(".*<.+>.*")) {
+                        fs = fs.split("<")[0];
+
+                    }
+                    if (fs.split(",").length > 2) {
+                        String s = fs.split(",")[0] + "," + fs.split(",")[1];
+                        allMatches.add(s.trim());
+                    }
+                    else {
+                        allMatches.add(fs.trim());
+                    }
+
+                    if (split[0].split(",").length > 2) {
+                        String s = split[0].split(",")[0] + "," + split[0].split(",")[1];
+                        allMatches.add(s.trim());
+                    }
+                    else {
+                        allMatches.add(split[0]);
+                    }
+
+
+                }
+
+            } else {
+                if (match.matches(".*<.+>.*")) {
+                    match = match.split("<")[0];
+
+                }
+                if (match.split(",").length > 2) {
+                    String s = match.split(",")[0] + "," + match.split(",")[1];
+                    allMatches.add(s.trim());
+                }
+                else {
+                    allMatches.add(match.trim());
+                }
+
+            }
+
         }
 
         //while (matcher_aktenzeichen.find()) {

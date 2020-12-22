@@ -1,0 +1,1 @@
+{"creator":"JGraphT JSON Exporter","nodes":[{"pageRank":"NID","id":"1","label":"3 StR 267/99","court":"NID"},{"pageRank":"NID","id":"2","label":"5 StR 604/00","court":"NID"},{"pageRank":0.0012132101168510511,"id":"3","label":"4 StR 660/09","court":"BGH"}],"edges":[{"source":"3","target":"1"},{"source":"3","target":"2"}],"version":"1"}

@@ -6,23 +6,27 @@ import bundesgerichte_law_corpus.NetworkController;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.DecisionSection;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 
 @RestController
@@ -85,7 +89,7 @@ public class DecisionController {
                 dn, "Stattgebender Kammerbeschluss", norms, lowerCourts, "Teilweise stattgebender Kammerbeschluss: Auslieferung verletzt Grundrechte des Betroffenen aus Art 2 Abs 1 GG iVm Art 1 Abs 1 GG, wenn die Vollstreckung einer erschwerten lebenslangen Freiheitsstrafe droht - hier: Auslieferung in die Türkei zum Zweck der Strafverfolgung wegen Staatsschutzdelikten - Möglichkeit der Begnadigung nach türkischem Recht aufgrund tatbestandlicher Einschränkungen im Hinblick auf Verhältnismäßigkeitsgrundsatz des GG unzureichend", gui_princ,
                 sonstosatz, tenor, fact, decReasons, dissentingOpinions, "http://www.rechtsprechung-im-internet.de/jportal/?quelle=jlink&docid=KVRE387011001&psml=bsjrsprod.psml&max=true", occCit,
                 occJudge);
-        //_decisionRepository.save(decision1);
+        _decisionRepository.save(decision1);
         return null;
     }
 
@@ -95,9 +99,9 @@ public class DecisionController {
 
         System.out.println("Crawl all Decisions...");
         ArrayList<String> decisionIDs = new ArrayList<>();
-        File decision_folder = new File("../Resources");
+        File decision_folder = new File("../Resources/Decisions");
         File[] files = decision_folder.listFiles();
-        for (int i = 10000; i <= 35000; i++) {
+        for (int i = 44998; i < files.length; i++) {
             decisionIDs.add(files[i].getName().split("\\.")[0]);
         }
 
@@ -178,8 +182,8 @@ public class DecisionController {
     )
     public String testNetwork() {
         ArrayList<Decision> decs = new ArrayList<>();
-        ArrayList<Decision> all = (ArrayList<Decision>) _decisionRepository.findAll();
-        //ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
+        //ArrayList<Decision> all = (ArrayList<Decision>) _decisionRepository.findAll();
+        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
         //ArrayList<Decision> bgh = _decisionRepository.findByCourtType("BGH");
         //ArrayList<Decision> bverwg = _decisionRepository.findByCourtType("BVerwG");
         //ArrayList<Decision> BFH = _decisionRepository.findByCourtType("BFH");
@@ -187,7 +191,7 @@ public class DecisionController {
         //ArrayList<Decision> bsg = _decisionRepository.findByCourtType("BSG");
         //ArrayList<Decision> bpatg = _decisionRepository.findByCourtType("BPatG");
 
-        decs.addAll(all);
+        decs.addAll(bverfg);
         //decs.addAll(bgh);
         NetworkController networkController = new NetworkController();
         networkController.createNetwork(decs);
@@ -196,14 +200,51 @@ public class DecisionController {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/computeClusters",
+            path = "/computeCluster",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String testPageRank() {
-        ArrayList<Decision> decs = new ArrayList<>();
-        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
-        decs.addAll(bverfg);
+    public String computeCluster() {
+        //ArrayList<Decision> decs = new ArrayList<>();
+        //TODO change to findAll
+
+
+        System.out.println("Crawl all Decisions...");
+        ArrayList<String> decisionIDs = new ArrayList<>();
+        File decision_folder = new File("../Resources/Decisions");
+        File[] files = decision_folder.listFiles();
+        for (int i = 200; i < files.length; i++) {
+            decisionIDs.add(files[i].getName().split("\\.")[0]);
+        }
+
+        System.out.println("Start Mapping...");
+        DataMapper dataMapper = new DataMapper();
+        ArrayList<Decision> decs = dataMapper.mapDecisionObjects(decisionIDs);
+        System.out.println("Decisions Mapped successfully");
+
+
+        //ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
+        /*
+        ArrayList<Decision> bgh = _decisionRepository.findByCourtType("BGH");
+        ArrayList<Decision> bverwg = _decisionRepository.findByCourtType("BVerwG");
+        ArrayList<Decision> BFH = _decisionRepository.findByCourtType("BFH");
+        ArrayList<Decision> bag = _decisionRepository.findByCourtType("BAG");
+        ArrayList<Decision> bsg = _decisionRepository.findByCourtType("BSG");
+        ArrayList<Decision> bpatg = _decisionRepository.findByCourtType("BPatG");
+
+
+        decs.addAll(bgh);
+        decs.addAll(bverwg);
+        decs.addAll(BFH);
+        decs.addAll(bag);
+        decs.addAll(bsg);
+        decs.addAll(bpatg);
+        */
+
+        //decs.addAll(bverfg);
+
         HashMap<String, Decision> decMap = new HashMap<>();
+
+
         for (Decision d : decs) {
             String docketNumber = d.getDocketNumber().toString();
             docketNumber = docketNumber.replaceAll("\\[", "");
@@ -215,9 +256,11 @@ public class DecisionController {
         //decs.addAll(bgh);
         NetworkController networkController = new NetworkController();
         Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
-
-        //NetworkController networkController = new NetworkController();
-        networkController.generatePageRank(network);
+        Map<String, Double> pagerank = networkController.generatePageRank(network);
+        //networkController.generateDegrees(network);
+        //Map<String, Double> closeness = networkController.generateClosenessCentrality(network);
+        //Map<String, Double> betweenness = networkController.generateBetweennessCentrylity(network);
+        Map<String, Double> clusteringCoeffizient = networkController.generateClusteringCoeffizient(network);
         List<Set<String>> cw_cluster = networkController.generateClusteringWithCW(network);
         //List<Set<String>> mcl_clusters = networkController.generateClusteringwithMCL(network);
 
@@ -264,7 +307,9 @@ public class DecisionController {
                 Decision decision = decMap.get(s);
                 if (decision != null) {
                     decision.setClusterName(String.valueOf(i));
-                    //TODO _decisionRepository.save(decision);
+                    decision.setPageRank(pagerank.get(s));
+                    // TODO centralities
+                    //_decisionRepository.save(decision);
                 }
 
             }
@@ -272,6 +317,51 @@ public class DecisionController {
             String path = regular_path + "graph_cluster_" + i + ".json ";
 
             networkController.saveGraphToFile(cluster_graphs.get(i), path);
+        }
+
+        // Add Court Data to Files
+        File folder1 = new File("src/main/resources/networks");
+
+        for (File f : folder1.listFiles()) {
+            String fileName = f.getName();
+            BufferedReader br;
+            String obj_string = "";
+            try {
+                br = new BufferedReader(new FileReader(f));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    obj_string += line;
+                }
+                br.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            JSONObject obj = new JSONObject(obj_string);
+            JSONArray nodes = obj.getJSONArray("nodes");
+            for (int i = 0; i < nodes.length(); i++) {
+                JSONObject jsonObject = nodes.getJSONObject(i);
+                Decision current_decision = decMap.get(jsonObject.get("label"));
+                if (current_decision != null) {
+                    jsonObject.put("court", current_decision.getCourtType());
+                    jsonObject.put("pageRank", current_decision.getPageRank());
+                } else {
+                    jsonObject.put("court", "NID");
+                    jsonObject.put("pageRank", "NID");
+                }
+
+            }
+
+            try {
+                FileWriter fileWriter = new FileWriter("src/main/resources/networks/" + fileName);
+                fileWriter.write(obj.toString());
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
         return amount + " Clusters computed";
@@ -296,7 +386,6 @@ public class DecisionController {
     }
 
 
-
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/decision",
@@ -310,4 +399,101 @@ public class DecisionController {
     }
 
 
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/getCl",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ArrayList<String> getExistingClusters() {
+        File folder = new File("src/main/resources/networks");
+
+        ArrayList<String> cluster_names = new ArrayList();
+        for (File network_file : folder.listFiles()) {
+            String filename = network_file.getName();
+            cluster_names.add(filename);
+        }
+
+        //Collections.sort(cluster_names, (v, v1) -> v.substring(13, 16).compareTo(v1));
+        return cluster_names;
+    }
+
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/getClData",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getClusterInformation(@RequestParam String cl) {
+        File file = new File("src/main/resources/networks/" + cl);
+        BufferedReader br;
+        String obj = "";
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                obj += line;
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/searchQuery",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ArrayList<Decision> testQuery(@RequestParam String term) {
+
+
+        ArrayList<Decision> byCustomQuery = _decisionRepository.findByCustomQuery(term);
+        //Query searchQuery = new NativeSearchQueryBuilder().withFilter(regexpQuery("courtType", "BVerfG")).build();
+        //SearchHits<Decision> articles = _decisionRepository.search(searchQuery, Decision.class, IndexCoordinates.of("bundesgerichte_decisions"));
+        // NativeSearchQuery nativeSearchQuery = new NativeSearchQueryBuilder().withFields("courtType", "docketNumber", "clusterName", "pageRank").
+        return byCustomQuery;
+    }
+
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            path = "/testNLP",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String testNLPService() {
+
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("Die Beschwerde gegen die Nichtzulassung der Revision in dem Urteil des 5. Zivilsenats des Oberlandesgerichts");
+        strings.add("Köln vom 18. April 2007 wird auf Kosten des Klägers zurückgewiesen.");
+        strings.add("Apple Inc. introduced a new mobile device today");
+        strings.add("Die Gerechtigkeit wurde mit einem Pinguin besprochen.");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = null;
+        try {
+            requestBody = objectMapper.writeValueAsString(strings);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:5000/ClassificationService")).POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+
+        String result = "Not working";
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            result = response.body();
+            System.out.println("done");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

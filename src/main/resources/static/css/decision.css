@@ -1,0 +1,14 @@
+.container-fluid {
+    padding: 20px;
+}
+
+.drow {
+    /*display: flex;*/
+    width: 100%;
+    margin: 10px 0;
+}
+
+.ddesc {
+    width: 25%;
+    font-weight: 600;
+}

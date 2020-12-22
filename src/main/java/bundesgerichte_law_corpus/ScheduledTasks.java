@@ -7,6 +7,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,7 +24,7 @@ public class ScheduledTasks {
     @Autowired
     DecisionRepository _decisionRepository;
 
-    //@Scheduled(cron = "0 */23 * ? * *")
+    //@Scheduled(cron = "0 */5 * ? * *")
     @Scheduled(cron = "0 0 */12 ? * *")
     public void dailyRIIRSSRequest() {
         System.out.println("Start crawling new RII-Feed Decisions...");
@@ -50,6 +54,24 @@ public class ScheduledTasks {
         Iterable<Decision> decisions = _decisionRepository.findAll();
         NetworkController networkController = new NetworkController();
         networkController.createNetwork((ArrayList<Decision>) decisions);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void doNLPTasks() {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("localhost:5000")).build();
+
+        try {
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            System.out.println("done");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //@Scheduled(cron = "0 */24 * ? * *")

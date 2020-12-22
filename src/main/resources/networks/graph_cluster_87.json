@@ -1,0 +1,1 @@
+{"creator":"JGraphT JSON Exporter","nodes":[{"pageRank":"NID","id":"1","label":"1 BvR 393/84","court":"NID"},{"pageRank":0.0012132101168510511,"id":"2","label":"I ZR 160/08","court":"BGH"},{"pageRank":"NID","id":"3","label":"1 BvR 1822/08","court":"NID"}],"edges":[{"source":"2","target":"1"},{"source":"2","target":"3"}],"version":"1"}

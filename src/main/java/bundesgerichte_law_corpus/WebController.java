@@ -3,6 +3,8 @@ package bundesgerichte_law_corpus;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.DecisionSection;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Controller;
@@ -23,7 +25,7 @@ public class WebController {
     DecisionRepository _decisionRepository;
 
     @GetMapping(value = "/decision")
-    public String getDecisionTemplate(@RequestParam(name="az", required = true) String docketnumber, Model model) {
+    public String getDecisionTemplate(@RequestParam(name = "az", required = true) String docketnumber, Model model) {
         Optional<Decision> decision = _decisionRepository.findByDocketnumber(docketnumber);
 
         Decision dec = decision.get();
@@ -61,8 +63,7 @@ public class WebController {
         model.addAttribute("URL", dec.getUrl());
         if (!(dec.getPageRank() == 0.0)) {
             model.addAttribute("PageRank", dec.getPageRank());
-        }
-        else {
+        } else {
             model.addAttribute("PageRank", "");
         }
 
@@ -75,5 +76,31 @@ public class WebController {
         model.addAttribute("AbweichendeMeinungen", dissentingopinions);
         model.addAttribute("Zitate", citations);
         return "decision";
+    }
+
+
+    @GetMapping(value = "/cluster")
+    public String getClusterTemplate(@RequestParam(name = "id", required = true) String cluster, Model model) {
+
+        model.addAttribute("Cluster", "/getClData?cl=graph_cluster_" + cluster);
+        return "cluster";
+    }
+
+
+    @GetMapping(value = "/search")
+    public String testQuery(@RequestParam(name = "term", required = true) String term, Model model) {
+
+        Optional<Decision> searchResultDN = _decisionRepository.findByDocketnumber(term);
+        if (!searchResultDN.isEmpty() && searchResultDN.get().getDocketNumber().toString().replaceAll("[\\[\\]]", "").equals(term)) {
+            ArrayList<Decision> list = new ArrayList<>();
+            list.add(searchResultDN.get());
+            model.addAttribute("responses", list);
+        }
+        else {
+            ArrayList<Decision> searchResults = _decisionRepository.findByCustomQuery(term);
+            model.addAttribute("responses", searchResults);
+        }
+
+        return "search";
     }
 }

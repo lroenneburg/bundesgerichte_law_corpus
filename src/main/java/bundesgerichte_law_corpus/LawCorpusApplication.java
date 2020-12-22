@@ -1,20 +1,10 @@
 package bundesgerichte_law_corpus;
 
-import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
-import bundesgerichte_law_corpus.model.Decision;
-import bundesgerichte_law_corpus.model.FundstellenDictionary;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 
 @SpringBootApplication
@@ -24,6 +14,8 @@ public class LawCorpusApplication extends SpringBootServletInitializer {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(LawCorpusApplication.class, args);
         //System.out.println("started");
+        //Analysis analysis = new Analysis();
+        //analysis.runData();
 
 
 

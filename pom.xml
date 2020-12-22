@@ -11,7 +11,7 @@
     <groupId>com.uhh</groupId>
     <artifactId>bundesgerichte_law_corpus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>bundesgerichte_law_corpus</name>
     <description>Project for the bachelorthesis from Lennart Roenneburg</description>
 
@@ -53,6 +53,11 @@
             <version>3.141.59</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+        </dependency>
 
 
         <dependency>
@@ -78,13 +83,19 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>7.8.1</version>
+            <version>7.10.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.8.1</version>
+            <version>7.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>7.10.1</version>
         </dependency>
 
         <dependency>
@@ -115,6 +126,8 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+
         </plugins>
     </build>
 

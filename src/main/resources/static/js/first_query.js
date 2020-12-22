@@ -21,21 +21,28 @@ document.addEventListener("DOMContentLoaded", function (e) {
     totalAmountOfDecisionsInDatabase = JSON.parse(result);
     console.log(totalAmountOfDecisionsInDatabase);
     console.log(document.getElementById("dbAmount"));
-    document.getElementById("dbAmount").innerHTML = "Zurzeit sind " + totalAmountOfDecisionsInDatabase + " Gerichtsentscheidungen in der Datenbank.";
+    if (document.getElementById("dbAmount") != null) {
+        document.getElementById("dbAmount").innerHTML = "Zurzeit sind " + totalAmountOfDecisionsInDatabase + " Gerichtsentscheidungen in der Datenbank.";
+    }
 
 });
 
 
 function searchAZ() {
     var value = document.getElementsByClassName("search-feld")[0].value;
-    var url = "http://localhost:8080/decision?az=" + value;
+
+    var url = "http://localhost:8080/search?term=" + value;
     document.location.replace(url);
+
+
+
+
 
 }
 
 function searchAZByEnter() {
-    if(event.key === 'Enter') {
+    if (event.key === 'Enter') {
         searchAZ();
     }
-    
+
 }

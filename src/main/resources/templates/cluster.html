@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>BA Thesis - Lennart Rönneburg</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- CSS for this template -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- D3JS -->
+  <!--<script src="https://d3js.org/d3.v6.min.js"></script>-->
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+
+
+
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">
+        <div class="sidebar-heading-logo"></div>
+        <div class="sidebar-heading-name">Universität Hamburg</div>
+      </div>
+      <div class="list-group list-group-flush">
+        <a href="" class="list-group-item list-group-item-action bg-light">Informationen</a>
+        <a href="/clusterList.html" class="list-group-item list-group-item-action bg-light">Cluster</a>
+        <a href="#" class="list-group-item list-group-item-action bg-light">Statistiken</a>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" id="header">
+        <button class="btn btn-primary" id="menu-toggle">Menü</button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <!--
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            -->
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/lroenneburg/bundesgerichte_law_corpus"
+                id="header-github-link">
+                <div class="github-logo"></div>
+                <div style="padding-left: .3rem;">GitHub</div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="header-thesis-link">
+                <div class="pdf-logo"></div>
+                <div style="padding-left: .3rem;">Thesis</div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="header-about-link">
+                <div class="about-logo"></div>
+                <div style="padding-left: .3rem;">About</div>
+              </a>
+            </li>
+            <!--
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+            -->
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        <div id="cluster_network">
+          <svg width="1030" height="600">
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="2" refY="2" orient="auto"
+              markerUnits="strokeWidth">
+              <path d="M0,0 L4,2 0,4"></path>
+            </marker>
+            <rect id="background" width="100%" height="100%" fill="white" pointer-events="all"></rect>
+            <g id="root">
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+</body>
+
+
+
+<style>
+  .links polyline {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    marker-mid: url(#arrow);
+  }
+
+  #cluster_network {
+    height: 90%;
+  }
+
+  .container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+    height: unset;
+  }
+
+  svg path {
+    stroke: #999;
+    stroke-opacity: 1;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  #nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    width: 500px;
+    height: 500px;
+    line-height: 500px;
+    border-radius: 50%;
+    font-size: 50px;
+    color: #fff;
+    text-align: center;
+    background: #000;
+  }
+
+  #nodes text {
+    pointer-events: none;
+    font: 10px sans-serif;
+  }
+
+  .circle {
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+  }
+</style>
+
+
+<script th:inline="javascript">
+
+  document.addEventListener("DOMContentLoaded", function (e) {
+    console.log("before")
+
+    var height = 600;
+    var width = 600;
+
+    //var color = {
+    //  const scale = d3.scaleOrdinal(d3.schemeCategory10);
+    //  return d => scale(d.group);
+    //}
+    var zoom = d3.behavior
+      .zoom()
+      .scaleExtent([1 / 4, 4])
+      .on('zoom.zoom', function () {
+        root.attr('transform',
+          'translate(' + d3.event.translate + ')'
+          + 'scale(' + d3.event.scale + ')');
+      });
+
+    var container = $('#cluster_network');
+    var width = container.width()
+    var height = container.height();
+
+
+    var svg = d3.select('svg')
+      .attr("width", '100%')
+      .attr("height", '90%')
+      .attr('viewBox', '0 0 ' + Math.min(width, height) + ' ' + Math.min(width, height) * 9 / 16 * 0.9)
+      .attr('preserveAspectRatio', 'xMinYMin');
+
+    svg.call(zoom);
+
+    var root = svg.select('#root');
+    var node_group = svg.select('#nodes');
+    var link_group = svg.select('#links');
+
+    var color = d3.scaleLinear()
+      .domain([0, 1, 2, 3, 4])
+      .range(["white", "#0174DF", "#04B404", "#DF7401", "#FFBF00"]);
+
+    var simulation = d3.forceSimulation()
+      .force("link", d3.forceLink().id(function (d) { return d.id; }))
+      .force("charge", d3.forceManyBody().strength(-20))
+      .force("center", d3.forceCenter(width / 4, height / 4))
+      .force("collide", d3.forceCollide().radius(60).iterations(2));
+
+
+    var clustername = [[${ Cluster }]];
+    d3.json(clustername + ".json", function (error, graph) {
+      if (error) throw error;
+
+      var link = root.append("g")
+        .attr("class", "links")
+        .selectAll("polyline")
+        .data(graph.edges)
+        .enter().append("polyline")
+        .attr("stroke-width", function (d) { return Math.sqrt(d.value); })
+
+
+      var node = root.append("g")
+        .attr("class", "nodes")
+        .selectAll("g")
+        .data(graph.nodes)
+        .enter().append("g")
+
+      var circles = node.append("circle")
+        .attr("r", 5)
+        .attr("fill", function (d) { return determineColor(d.court); })
+        .attr("onclick", function (d) { return "if ('" + d.court + "' !== 'NID') window.location = '/decision?az=" + d.label + "'"; })
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+      var lables = node.append("text")
+        .text(function (d) {
+          return d.label;
+        })
+        .attr('x', 6)
+        .attr('y', 3);
+
+      node.append("title")
+        .text(function (d) { return d.label; });
+
+      simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+
+      simulation.force("link")
+        .links(graph.edges);
+
+      function ticked() {
+        /*
+      link
+        .attr("x1", function (d) { return d.source.x; })
+        .attr("y1", function (d) { return d.source.y; })
+        .attr("x2", function (d) { return d.target.x; })
+        .attr("y2", function (d) { return d.target.y; });
+        */
+        link
+          .attr("points", function (d) {
+            var x1 = d.source.x;
+            var y1 = d.source.y;
+            var x3 = d.target.x;
+            var y3 = d.target.y;
+            var x2 = x1 + 0.5 * (x3 - x1);
+            var y2 = y1 + 0.5 * (y3 - y1);
+            return x1 + "," + y1 + " " + x2 + "," + y2 + " " + x3 + "," + y3;
+          });
+
+        node
+          .attr("transform", function (d) {
+            return "translate(" + d.x + "," + d.y + ")";
+          })
+      }
+    });
+
+
+    function dragstarted(d) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+    function testfunction(id) {
+      window.location.href = "detail?id=" + id;
+    }
+
+    var force = d3.layout
+      .force();
+
+    function lapsedZoomFit(ticks, transitionDuration) {
+      for (var i = ticks || 200; i > 0; --i) force.tick();
+      force.stop();
+      zoomFit(undefined, transitionDuration);
+    }
+
+    function zoomFit(paddingPercent, transitionDuration) {
+      var bounds = root.node().getBBox();
+      var parent = root.node().parentElement;
+      var fullWidth = parent.clientWidth,
+        fullHeight = parent.clientHeight;
+      var width = bounds.width,
+        height = bounds.height;
+      var midX = bounds.x + width / 2,
+        midY = bounds.y + height / 2;
+      if (width == 0 || height == 0) return; // nothing to fit
+      scale = min(dst.width / src.width, dst.height / src.height)
+      var scale = (paddingPercent || 0.75) / Math.max(width / fullWidth, height / fullHeight);
+      var translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
+
+      console.log(fullWidth);
+      console.log(fullHeight);
+      console.log(width);
+      console.log(height);
+      console.trace("zoomFit", translate, scale);
+      root
+        .transition()
+        .duration(transitionDuration || 0) // milliseconds
+        .call(zoom.translate(translate).scale(scale).event);
+    }
+
+    function determineColor(courtType) {
+      if(courtType === "BVerfG") {
+        return "orange";
+      }
+      else if (courtType === "BGH") {
+        return "red";
+      }
+      else if (courtType === "BFH") {
+        return "yellow";
+      }
+      else if (courtType === "BAG") {
+        return "green";
+      }
+      else if (courtType === "BVerwG") {
+        return "blue";
+      }
+      else if (courtType === "BPatG") {
+        return "brown";
+      }
+      else if (courtType === "BSG") {
+        return "black";
+      }
+      else {
+        return "grey";
+      }
+
+    }
+
+    //});
+  });
+  console.log("after")
+</script>
+
+</html>

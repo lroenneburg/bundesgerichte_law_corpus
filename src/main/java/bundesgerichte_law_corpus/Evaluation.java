@@ -37,6 +37,10 @@ public class Evaluation {
 
         SentenceDetectorME detector = new SentenceDetectorME(model);
 
+        int maxSentId = 0;
+        String maxDec = "";
+        int minSentId = 687;
+        String minDec = "";
         for (Decision decision : decisions) {
             int sentID = 0;
             int stellennummer = 0;
@@ -158,13 +162,27 @@ public class Evaluation {
                     e.printStackTrace();
                 }
             }
-
+            if (sentID < minSentId) {
+                minSentId = sentID;
+                minDec = decision.getDocketNumber().toString();
+            }
+            if (sentID > maxSentId) {
+                maxSentId = sentID;
+                maxDec = decision.getDocketNumber().toString();
+            }
             fileWriter.write("\n");
 
 
 
             fileWriter.close();
         }
+
+        System.out.println("Max:");
+        System.out.println(maxDec);
+        System.out.println(maxSentId - 1);
+        System.out.println("Min:");
+        System.out.println(minDec);
+        System.out.println(minSentId - 1);
 
     }
 

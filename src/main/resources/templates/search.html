@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>BA Thesis - Lennart Rönneburg</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- CSS for this template -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+  <link href="css/searchEntry.css" rel="stylesheet">
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Project JS -->
+  <script src="js/searchResults.js"></script>
+  <script src="js/first_query.js"></script>
+
+
+
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <a style="text-decoration: none;" href="index.html" class="sidebar-heading">
+        <div class="sidebar-heading-logo"></div>
+        <div class="sidebar-heading-name">Universität Hamburg</div>
+      </a>
+      <div class="list-group list-group-flush">
+        <a href="/index.html" class="list-group-item list-group-item-action bg-light">Informationen</a>
+        <a href="/clusterList.html" class="list-group-item list-group-item-action bg-light">Cluster</a>
+        <a href="#" class="list-group-item list-group-item-action bg-light">Statistiken</a>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" id="header">
+        <button class="btn btn-primary" id="menu-toggle">Menü</button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <!--
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            -->
+            <li style="padding-top: .5rem; margin-right: 40px;" class="nav-item active">
+              <label for="suche">Suche</label>
+              <input class="search-feld" type="search" id="suche" placeholder="Aktenzeichen..."
+                onkeydown="searchAZByEnter()">
+              <button type="submit" onclick="searchAZ()"><i class="fa fa-search"></i></button>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/lroenneburg/bundesgerichte_law_corpus"
+                id="header-github-link">
+                <div class="github-logo"></div>
+                <div style="padding-left: .3rem;">GitHub</div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="header-thesis-link">
+                <div class="pdf-logo"></div>
+                <div style="padding-left: .3rem;">Thesis</div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="header-about-link">
+                <div class="about-logo"></div>
+                <div style="padding-left: .3rem;">About</div>
+              </a>
+            </li>
+            <!--
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+            -->
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid"  th:if="${responses != null}">
+        <div class="searchtitle">Suchergebnisse:</div>
+        <ul class="resultlist">
+          <li class="search-entry" th:each="item : ${responses}">
+            <a href="#" style="text-decoration: none; color: black;">
+              <div class="horizontaldivider"></div>
+              <div class="firstline">
+                <div class="left-first">
+                  <div class="firstline-element docketnumber" th:text="${item.docketNumber}"></div>
+                  <div class="divider">|</div>
+                  <div class="firstline-element" th:text="${item.decisionType}"></div>
+                  <div class="divider">|</div>
+                  <div class="firstline-element" th:text="${item.decisionDate}"></div>
+                </div>
+                <div class="right-first">
+                  <div class="norms" th:text="${item.norms}"></div>
+                </div>
+              </div>
+              <div class="littledivider"></div>
+              <div class="entry-title" th:text="${item.decisionTitle}"></div>
+              <!--<div class="horizontaldivider"></div>-->
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+</body>
+
+</html>

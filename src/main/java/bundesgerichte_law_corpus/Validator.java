@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -15,21 +16,36 @@ import java.util.*;
  */
 public class Validator {
 
-    private String _edgesDocumentPath = "resources/Coupette/bverfge-edges.csv";
-    private String _nodeDocumentPath = "resources/Coupette/bverfge-nodes.csv";
+
+    private String _edgesDocumentPath = "../Resources/Coupette/bverfge-edges.csv";
+    private String _nodeDocumentPath = "../Resources/Coupette/bverfge-nodes.csv";
     private String _ground_truth_judgesPath = "resources/EntityRecognition/ground_truth_judges.csv";
+
+
+    public static void main(String[] args) {
+        File folder_testset = new File("../Resources/CoupetteSet");
+
+        ArrayList<String> dIDs = new ArrayList<>();
+        File[] files = folder_testset.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            dIDs.add(files[i].getName().split("\\.")[0]);
+        }
+        DataMapper dataMapper = new DataMapper();
+        ArrayList<Decision> decisions = dataMapper.mapDecisionObjects(dIDs);
+
+        NetworkController networkController = new NetworkController();
+        Graph<String, DefaultEdge> network = networkController.createNetwork(decisions);
+
+        Validator validator = new Validator(network, decisions);
+    }
 
     /**
      * This constructor is used for the case, that we want to evaluate the DocketNumberNetwork against the results of
      * Corinna Coupettes approach
      */
-    public Validator(Graph<String, DefaultEdge> graph, ArrayList<Decision> decisions) {
+    public Validator(ArrayList<Decision> decisions) {
         HashMap<String, String> dictionary = getDictData(_nodeDocumentPath);
-
-        //HashMap<String, String> backwards_dictionary = new HashMap<>();
-        //for(Map.Entry<String, String> entry : dictionary.entrySet()){
-        //    backwards_dictionary.put(entry.getValue(), entry.getKey());
-        //}
+        HashMap<String, String> revDictionary = getRevDictData(_nodeDocumentPath);
 
         ArrayList<String> fsForDecisionsFromTestSet = new ArrayList<>();
         for (Decision d : decisions) {
@@ -37,7 +53,7 @@ public class Validator {
             fsForDecisionsFromTestSet.add(dn.get(0));
         }
 
-        ArrayList<String[]> references = getReferenceData(_edgesDocumentPath, fsForDecisionsFromTestSet);
+        ArrayList<String[]> references = getReferenceData(_edgesDocumentPath, fsForDecisionsFromTestSet, dictionary);
 
 
         ArrayList<String[]> my_references = new ArrayList<>();
@@ -49,12 +65,13 @@ public class Validator {
             refs.addAll(set);
 
             String source = de.getDocketNumber().get(0);
-            String source_fs = dictionary.get(source);
+            String source_fs = revDictionary.get(source);
             for (String target_fs : refs) {
                 my_references.add(new String[]{source_fs, target_fs});
             }
         }
 
+        /*
         ArrayList<String> temp_ref_strings = new ArrayList<>();
         for (String[] reference : references) {
             String str = reference[0] + "__" + reference[1];
@@ -69,7 +86,7 @@ public class Validator {
             String[] ps = string.split("__");
             references.add(new String[]{ps[0].trim(), ps[1].trim()});
         }
-
+        */
         compareResults(references, my_references);
 
         System.out.println("test");
@@ -108,12 +125,6 @@ public class Validator {
             }
         }
         double accuracy = (double) match_counter / (double) references.size();
-        //double precision = (double) match_counter/ ;
-        System.out.println("Coupette found " + references.size() + " Decision-references for the test dataset.");
-        System.out.println("I found " + my_references.size() + " Decision-references for the test dataset.");
-        System.out.println("Found " + match_counter + " matching References for the test dataset.");
-        System.out.println("Accuracy: " + accuracy);
-        //System.out.println("Precision: " + precision);
 
     }
 
@@ -122,6 +133,26 @@ public class Validator {
      *
      */
     private HashMap<String, String> getDictData(String filepath) {
+        HashMap<String, String> docketNumberDict = new HashMap<>();
+
+
+        CSVReader reader = null;
+        try {
+            reader = new CSVReader(new FileReader(filepath));
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                String az = line[2].replace("BVerfG", "").trim();
+                String fs = line[3];
+                docketNumberDict.put(fs, az);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return docketNumberDict;
+
+    }
+
+    private HashMap<String, String> getRevDictData(String filepath) {
         HashMap<String, String> docketNumberDict = new HashMap<>();
 
 
@@ -144,7 +175,7 @@ public class Validator {
     /**
      *
      */
-    private ArrayList<String[]> getReferenceData(String filepath, ArrayList<String> decisionsfromTS) {
+    private ArrayList<String[]> getReferenceData(String filepath, ArrayList<String> decisionsfromTS, HashMap<String, String> dictionary) {
 
 
         ArrayList<String[]> references = new ArrayList<>();
@@ -156,7 +187,8 @@ public class Validator {
             while ((line = reader.readNext()) != null) {
                 String src = line[0];
                 String target = line[1];
-                if (decisionsfromTS.contains(src)) {
+                String check = dictionary.get(src);
+                if (decisionsfromTS.contains(check)) {
                     references.add(new String[]{src, target});
                 }
             }
@@ -273,8 +305,5 @@ public class Validator {
                 }
             }
         }
-        System.out.println("Coupette found " + references.size() + " Decision-references for the test dataset.");
-        System.out.println("I found " + graph.edgeSet().size() + " Decision-references for the test dataset.");
-        System.out.println("Found " + counter + " matching References for the test dataset.");
     }
 }

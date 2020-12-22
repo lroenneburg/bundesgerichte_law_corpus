@@ -70,12 +70,12 @@ public class DecisionDownloader {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = sdf.parse(d);
             // TODO my costum time (last 2 days)
-            Date relDate = new Date(System.currentTimeMillis() - 172800000L);
+            //Date relDate = new Date(1602762380000L);
             //Date relDate = new Date(1598994459000L);
             // costum time 1 day
             //Date relDate = new Date(System.currentTimeMillis() - 86400000L);
             // TODO 12 hour version
-            // Date relDate = new Date(System.currentTimeMillis() - 43200000L);
+            Date relDate = new Date(System.currentTimeMillis() - 43200000L);
             if (date.after(relDate)) {
                 String link = dec.select("link").text().trim();
                 urls.add(link);

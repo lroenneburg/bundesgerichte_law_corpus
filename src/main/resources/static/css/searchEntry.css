@@ -1,0 +1,53 @@
+.resultlist {
+    margin: 1rem 2rem;
+}
+
+.search-entry {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.firstline {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+}
+
+.firstline-element {
+    margin-right: 1rem;
+}
+
+.divider {
+    margin-right: 1rem;
+    font-weight: 600;
+}
+
+.horizontaldivider {
+  border-bottom: 8px solid #A90011;
+  border-radius: 5px;
+}
+
+.searchtitle {
+    padding: 1rem 2rem;
+    font-size: x-large;
+    font-weight: 600;
+}
+.littledivider {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid grey;
+}
+
+.docketnumber {
+    font-weight: 500;
+}
+
+.left-first {
+    display: flex;
+}
+
+.entry-title {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+}
