@@ -12,7 +12,7 @@ Link zu der Arbeit:
 Die Software steht zur freien Verfügung und kann aus diesem Repository gecloned werden.
 Um die Software nutzen zu können, muss der Zugang zu einer Elasticsearch Datenbank bestehen. Die Zugänge zu dieser Datenbank können in der [application.properties](https://github.com/lroenneburg/bundesgerichte_law_corpus/blob/main/src/main/resources/application.properties) unter der Variable
 ```sh
-eldb.host = [...] (host und port - Bsp: *beispielurl.beispielserver.de:1234*)
+eldb.host = [...] (host und port - Bsp: beispielurl.beispielserver.de:1234)
 ```
 eingetragen werden.
 
