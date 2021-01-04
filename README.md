@@ -1,4 +1,4 @@
-# Bundesgerichte Law Decisions
+# Bundesgerichte Law Corpus
 ### Bachelorthesis von Lennart Rönneburg
 
 Dieses Repository ist Teil der Bachelorarbeit von Lennart Rönneburg der Universität Hamburg.
