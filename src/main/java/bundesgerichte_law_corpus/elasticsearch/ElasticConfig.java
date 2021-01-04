@@ -33,9 +33,6 @@ public class ElasticConfig {
     @Bean
     public RestHighLevelClient client() {
 
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("law-lennart", "di8Gt87"));
-
         //TestServer
         //ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo("localhost:9200").withSocketTimeout(100000).build();
 

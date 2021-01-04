@@ -36,7 +36,7 @@ public class Validator {
         NetworkController networkController = new NetworkController();
         Graph<String, DefaultEdge> network = networkController.createNetwork(decisions);
 
-        Validator validator = new Validator(network, decisions);
+        //Validator validator = new Validator(network, decisions);
     }
 
     /**

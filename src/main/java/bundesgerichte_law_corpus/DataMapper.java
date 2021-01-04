@@ -22,51 +22,65 @@ import java.util.regex.Pattern;
  */
 public class DataMapper {
 
-    // Regular Expression which finds all types of docketNumbers
+    // Regular Expression which finds types of docketNumbers and "Fundstellen"
     private String _citationRegEx = "(((VGS|RiZ\\s?s?\\(R\\)|KZR|VRG|RiZ|EnRB|StbSt\\s?\\(B\\)|AnwZ\\s?\\(Brfg\\)|RiSt|PatAnwSt\\s?\\(R\\)|AnwZ\\s?\\(B\\)|PatAnwZ|EnVZ|AnwSt\\s?\\(B\\)|NotSt\\s?\\(Brfg\\)|KVZ|KZB|AR\\s?\\(Ri\\)|NotZ\\s?\\(Brfg\\)|RiSt\\s?\\(B\\)|AnwZ\\s?\\(P\\)|EnZB|RiSt\\s?\\(R\\)|NotSt\\s?\\(B\\)|AnwSt|WpSt\\s?\\(R\\)|KVR|AR\\s?\\(Kart\\)|EnZR|StbSt\\s?\\(R\\)|WpSt\\s?\\(B\\)|KZA|AR\\s?\\(Enw\\)|AnwSt\\s?\\(R\\)|KRB|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(B\\)|EnVR|AnwZ|NotZ|EnZA|AR)\\s\\d+/\\d+)|((GSZ|LwZB|WpSt\\s?\\(B\\)|AnwZ|LwZR|KVZ|EnRB|PatAnwSt\\s?\\(B\\)|ARP|VGS|WpSt\\s?\\(R\\)|RiSt\\s?\\(B\\)|EnZA|KRB|AnwSt\\s?\\(R\\)|NotSt\\s?\\(Brfg\\)|EnVR|LwZA|ZB|AR\\s?\\(Vollz\\)|StB|ZR|AR\\s?\\(VS\\)|BJs|BLw|NotZ\\s?\\(Brfg\\)|RiZ\\s?\\(B\\)|PatAnwSt\\s?\\(R\\)|AK|RiZ|PatAnwZ|ARs|StbSt\\s?\\(R\\)|VRG|NotSt\\s?\\(B\\)|AR\\s?\\(Enw\\)|AR\\s?\\(VZ\\)|StE|KVR|AR\\s?\\(Ri\\)|AR|AnwSt|NotZ|StbSt\\s?\\(B\\)|StR|AZR|ZA|AnwZ\\s?\\(B\\)|EnZR|AR\\s?\\(Kart\\)|GSSt|AnwZ\\s?\\(P\\)|ZR\\s?\\(Ü\\)|AnwZ\\s?\\(Brfg\\)|KZB|BGns|KZR|RiSt|KZA|BAusl|AnwSt\\s?\\(B\\)|BGs|RiZ\\s?\\(R\\)|EnZB|RiSt\\s?\\(R\\)|ARZ|EnVZ)\\s\\d+/\\d+)|([I+|IV|V|VI|VII|VIII|IX|X|XI|XII|0-9]+[a-z]?\\s[A-Za-z\\(\\)]{1,20}\\s\\d+/\\d\\d))|[A-Z]{1}\\s[0-9]+\\s[A-Z]+\\s\\d+\\/\\d+\\s[A-Z]{1}|C\\-\\d+\\/\\d+|(RGZ|RGSt|RAG|PrOVG|RVA|RFH|StGH|SZ|KH|RG|BGE|B|BGHZ|BGHSt|BAGE|BVerwGE|BRAK-Mitt\\.|BSGE|BFHE|BVerfGE|BVerfGK|SZ|SSt|VfSlg|BGE|AbfallR|AcP|AfkKR|AfP|AG|AiB|AktStR|ANAZAR|AnwBl|AöR|AOStB|ArbR|ArbRB|ARSP|ArztR|ASR|AuAS|A\\&R|AUR|AuR|AVR|AW\\-Prax|BauR|BayVBl|BB|BKR|Blutalkohol|Br|BRAK\\-Mitt|BtPrax|CCLR|CCZ|CR|CSR|DAJV\\sNewsletter|DAJV|DAR|DB|DGVZ|DNotZ|DÖD|DÖV|DPJZ|DRiZ|DS|DSB|DStR|DuD|DVBl|DZWIR|EnWZ|ErbR|ErbStB|ErtrStB|EuGRZ|EuR|EurUP|EUUStB|EuZA|EuZW|EWeRK|EWiR|EWS|FA|FamFR|FamRB|FamRK|FamRZ|FF|FGPrax|Food|FoodR|Food\\sPrax|FR|FuR|FuS|GA|GewArch|GesR|GmbHR|GmbHStB|GPR|GRUR|GRUR\\-Int|GRUR\\-Prax|GSZ|GuP|GWR|HFR|HRRS|I\\+E|IHR|InfAuslR|IAR|info\\salso|InTeR|IPrax|IPRB|IR|IRZ|IStR|ITRB|IWRZ|JA|JAmt|JOR|JR|JRP|JURA|JurBüro|JuS|JFG|JZ|KJ|KommJur|Kriminalistik|KritV|KSzW|KTS|KuR|K\\&R|KUR|LKV|LMuR|MarkenR|MIR|MDR|MedR|medstra|MietRB|ML|MMR|MPR|MR\\-Int|MschrKrim|MwStR|NdsVBl|NdsVBl\\.|NJ|NJOZ|NJW|NJW-RR|NordÖR|NotBZ|NPLY|npoR|NStZ|NStZ-RR|N\\&R|NuR|NVwZ|NWVBl|NZA|NZBau|NZFam|NZG|NZI|NZKart|NZM|NZS|NZV|NZWehrr|NZWiSt|öAT|OER|PersV|PflR|PharmR|Praxis\\sder\\sRechtspsychologie|RabelsZ|RAW|RdA|RdE|RdFin|RdL|RdJB|RdTW|RDV|RechtsMed|ree|RiA|JaR|RIW|RNotZ|RohR|Rpfleger|RphZ|RPG|RRa|RT|R\\&P|RuP|r\\+s|RuZ|RW|SächsVBl|SchiedsAZ|SchiedsVZ|SchuR|SchulR\\sheute|SGb|SR|SpuRt|STAAT|StAZ|SteuK|StoffR|StraFo|StudZR|StuW|StV|SVR|ThürVBl|TranspR|Ubg|UFITA|UStB|UPR|UR|VBlBW|VergabeR|VersR|VERW|VerwA|VIA|VR|VRS|VRÜ|VuR|VSSR|Vollstr|WiRO|WissR|wistra|WM|WRP|W\\+B|WuW|ZaöRV|ZAR|ZAT|ZBB|ZBR|ZChinR|ZD|ZErb|ZESAR|ZEuP|ZEuS|ZEV|ZevKR|ZfA|ZfB|ZfBR|ZFE|ZfF|ZfgG|ZfPR|ZfIR|ZfPW|ZfRsoz|zfs|ZfSH\\/SGB|ZfU|ZFW|ZfWG|ZfZ|ZG|ZGE|ZGR|ZGS|ZHR|ZIAS|ZIP|ZIS|IWRZ|ZJapanR|ZJS|ZKJ|ZLR|ZLW|ZMGR|ZMR|ZNR|ZNER|ZParl|ZRP|ZRG|ZStV|ZStW|ZTR|ZUM|ZUR|ZVertriebsR|ZVI|ZVR|ZVertriebsR|ZWeR|ZWE|ZWH|ZInsO|NVwZ-RR|RGZ|BGHReport)\\s*\\d{1,6},\\s\\d{1,6}(?:.?\\s*?[(<\\[].*?[\\])>])?(?:[,]\\s*?\\d{1,6})?(?:[;]\\s*?\\d{1,6},\\s*?\\d{1,6}(?:.?\\s*?[(<\\[].*?[\\])>]|[,]\\s*?\\d{1,6})?)*";
 
 
-    ArrayList<Decision> _allDecisionsInDB = new ArrayList<>();
+    // List of all decisions, that are processed
+    ArrayList<Decision> _allDecisionsProcessed = new ArrayList<>();
+
 
 
     /**
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     * @throws URISyntaxException
-     * @throws InterruptedException
+     * Instantiate a DataMapper object to call his functionalities
      */
     public DataMapper() {
     }
 
 
+    /**
+     * Maps all given decision IDs to decision objects
+     * @param decisionIDs the list of decisionIDs from the decisions you want to get mapped
+     * @return the list of the mapped decisions
+     */
     public ArrayList<Decision> mapDecisionObjects(ArrayList<String> decisionIDs) {
 
         int counter = 0;
         for (String dec_id : decisionIDs) {
             String filepath = "../Resources/Decisions/" + dec_id + ".xml";
-            try {
-                Decision decision = readDecisionXML(filepath);
-                counter++;
+            Decision decision = readDecisionXML(filepath);
+            counter++;
 
-                if (counter % 1000 == 0) {
-                    System.out.println(counter + " Decisions mapped");
-                }
-                _allDecisionsInDB.add(decision);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (counter % 1000 == 0) {
+                System.out.println(counter + " Decisions mapped");
             }
+            _allDecisionsProcessed.add(decision);
         }
-        return _allDecisionsInDB;
+        return _allDecisionsProcessed;
     }
 
 
-    private Decision readDecisionXML(String filePath) throws IOException {
+    /**
+     *
+     * @param filePath
+     * @return
+     */
+    private Decision readDecisionXML(String filePath) {
 
         // Parse the Decision XML
         File file = new File(filePath);
-        FileInputStream fis = new FileInputStream(file);
-        Document doc = Jsoup.parse(fis, null, "", Parser.xmlParser());
+        FileInputStream fis;
+        Document doc = null;
+        // Parse the decision document (XML) with Jsoup
+        try {
+            fis = new FileInputStream(file);
+            Jsoup.parse(fis, null, "", Parser.xmlParser());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         // decisionID
         String decisionID = doc.select("doknr").text().trim();
@@ -335,38 +349,12 @@ public class DataMapper {
             occurringCitations.addAll(findAllRegExMatches(ds.getText()));
         }
 
-        //TODO uncomment for person network
-        //occurringJudges
+        // not used right now, but already defined to build the infrastructure for future work
         ArrayList<String> occurringJudges = new ArrayList<>();
-        //PDFController pdfController = new PDFController(ecli, year, month);
-        //ArrayList<String> occurringJudges = pdfController.getOccuringJudges();
 
 
-        /*
-        try {
-            //File myObj = new File("resources/EntityRecognition/temp_document.txt");
-            String pr_ecli = ecli.split(":")[4];
-            pr_ecli = pr_ecli.replace(".", "_");
 
-            File db_file = new File("resources/EntityRecognition/temp_db/" + pr_ecli + ".txt");
-            Scanner myReader = new Scanner(db_file);
-            while (myReader.hasNextLine()) {
-                String str_part = myReader.nextLine();
-                occuringPersons.add(str_part.trim());
-
-            }
-            myReader.close();
-
-
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
-        */
-
-
-        // Creating the Decision Object
+        // Creating the Decision Object with all the information
         Decision dec = new Decision(decisionID, ecli, courtType, formation, decisionDate, docketNumber, decisionType,
                 norms, previousCourts, decisionTitle, guidingPrinciple, otherOrientationSentence, tenor, fact, reasonsOrDecReasons,
                 dissentingOpinions, decisionURL, occurringCitations, occurringJudges);
@@ -377,8 +365,10 @@ public class DataMapper {
 
 
     /**
-     * @param text
-     * @return
+     * Finds all regular expression-matches in the decision text (title, fact, guiding principle,
+     * other orientation sentences, tenor, reasons, dissenting opinions)
+     * @param text the text you want to search for regular expressions
+     * @return the list of all matches
      */
     private ArrayList<String> findAllRegExMatches(String text) {
         ArrayList<String> allMatches = new ArrayList<>();
@@ -387,18 +377,23 @@ public class DataMapper {
         Matcher matcher_fundstellen = pattern_fundstellen.matcher(text);
         //Matcher matcher_aktenzeichen = pattern_aktenzeichen.matcher(text);
 
+        // while there are more matches
         while (matcher_fundstellen.find()) {
             String match = matcher_fundstellen.group();
+            // if there are more than one citation in a match
             if (match.contains(";")) {
                 String pre = matcher_fundstellen.group(7);
                 String[] split = match.split(";");
                 for (int i = 1; i < split.length; i++) {
                     String sec = split[i].trim();
                     String fs = pre + " " + sec;
+                    // Its possible that the specific site is named in "<...>" - we dont need that, so we delete it
                     if (fs.matches(".*<.+>.*")) {
                         fs = fs.split("<")[0];
 
                     }
+                    // Its possible that the specific site is named after a comma - we also dont need that, so we
+                    // delete it
                     if (fs.split(",").length > 2) {
                         String s = fs.split(",")[0] + "," + fs.split(",")[1];
                         allMatches.add(s.trim());
@@ -407,6 +402,7 @@ public class DataMapper {
                         allMatches.add(fs.trim());
                     }
 
+                    // we need to display the format "{zeitschrift|sammlung} {jahr}, {seite}"
                     if (split[0].split(",").length > 2) {
                         String s = split[0].split(",")[0] + "," + split[0].split(",")[1];
                         allMatches.add(s.trim());
@@ -419,10 +415,13 @@ public class DataMapper {
                 }
 
             } else {
+                // Its possible that the specific site is named in "<...>" - we dont need that, so we delete it
                 if (match.matches(".*<.+>.*")) {
                     match = match.split("<")[0];
 
                 }
+                // Its possible that the specific site is named after a comma - we also dont need that, so we
+                // delete it
                 if (match.split(",").length > 2) {
                     String s = match.split(",")[0] + "," + match.split(",")[1];
                     allMatches.add(s.trim());
@@ -434,18 +433,8 @@ public class DataMapper {
             }
 
         }
-
-        //while (matcher_aktenzeichen.find()) {
-        //    String match_2 = matcher_aktenzeichen.group();
-        //    allMatches.add(match_2);
-        //}
-
+        // now we return all the matches
         return allMatches;
-    }
-
-
-    public ArrayList<Decision> getAllDecisionsInDB() {
-        return _allDecisionsInDB;
     }
 
 }

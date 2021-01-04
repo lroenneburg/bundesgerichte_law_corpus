@@ -18,10 +18,6 @@ public class Analysis {
 
     }
 
-    public Analysis() {
-
-    }
-
     public static void runData() {
         System.out.println("Crawl all Decisions...");
         ArrayList<String> decisionIDs = new ArrayList<>();
@@ -162,12 +158,6 @@ public class Analysis {
             }
 
         }
-    }
-
-    public Analysis(Graph<String, DefaultEdge> graph) {
-        //computeDegreeHistograms(graph);
-        //computeLengthOfDecisions();
-
     }
 
     private static void comparisonWithAnnotatedData() {

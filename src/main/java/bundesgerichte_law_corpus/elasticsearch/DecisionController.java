@@ -1,6 +1,4 @@
 package bundesgerichte_law_corpus.elasticsearch;
-
-import bundesgerichte_law_corpus.Analysis;
 import bundesgerichte_law_corpus.DataMapper;
 import bundesgerichte_law_corpus.NetworkController;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
@@ -16,7 +14,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.http.MediaType;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,23 +26,26 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
+/**
+ * The decision controller manages the (non-thymeleaf) REST web client requests for the webapplication and elasticsearch
+ */
 @RestController
 public class DecisionController {
 
+    // The Elasticsearch Operations
     @Autowired
     ElasticsearchOperations operations;
 
+    // The decisionRepository to get the decisions from elasticsearch
     @Autowired
     DecisionRepository _decisionRepository;
 
 
-    @RequestMapping("/all")
-    public ArrayList<Decision> getAllDecisions() {
-        ArrayList<Decision> decisions = new ArrayList<>();
-        _decisionRepository.findAll().forEach(decisions::add);
-        return decisions;
-    }
-
+    /**
+     * Adds a static test-decision with set attributes to the database
+     *
+     * @return The added test-decision
+     */
     @RequestMapping(value = "/newTestDecision")
     public Decision addDecisions() {
 
@@ -94,23 +94,32 @@ public class DecisionController {
     }
 
 
+    /**
+     * Adds all locally saved decisions to the elasticsearch database
+     *
+     * @return the message that the upload was successfull
+     * @throws IOException occurs, when the folder with the decision files were not found
+     */
     @RequestMapping(value = "/addAllDecisionsToDB")
     public String addDB() throws IOException {
 
+        // First we crawl all local decisions that should be added to the DB
         System.out.println("Crawl all Decisions...");
         ArrayList<String> decisionIDs = new ArrayList<>();
         File decision_folder = new File("../Resources/Decisions");
         File[] files = decision_folder.listFiles();
-        for (int i = 44998; i < files.length; i++) {
+        for (int i = 0; i < files.length; i++) {
             decisionIDs.add(files[i].getName().split("\\.")[0]);
         }
 
+        // We start to map the decisions to decision Objects to store them in the database
         System.out.println("Start Mapping...");
         DataMapper dataMapper = new DataMapper();
         ArrayList<Decision> decisions = dataMapper.mapDecisionObjects(decisionIDs);
         System.out.println("Decisions Mapped successfully");
 
 
+        // To get a feedback how much decisions we added
         int counter = 0;
 
         System.out.println("Start uploading to ElasticSearch...");
@@ -122,7 +131,12 @@ public class DecisionController {
         return counter + " Decisions added successfully to Database.";
     }
 
-
+    /**
+     * Gets a specific decision from the ES database
+     *
+     * @param decisionid the (RII-intern) decisionID of the document ("Dokumentennummer")
+     * @return the decision with all information from the database
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/getDecision",
@@ -132,6 +146,12 @@ public class DecisionController {
         return _decisionRepository.findById(decisionid);
     }
 
+
+    /**
+     * Gets the size of the database, so the amount of decisions stored in it
+     *
+     * @return the count of all decisions in the ES database
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/getDBSize",
@@ -142,72 +162,20 @@ public class DecisionController {
     }
 
 
+    /**
+     * Generates a new Decision network with all decisions in the database, computes the PageRank, the degrees and the
+     * clustering coefficient and the Cluster with the Chinese Whispers Algorithm
+     *
+     * @return
+     */
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/getDecisionByECLI",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public Optional<Decision> getDecisionByECLIFromESDatabase(@RequestParam String ecli) {
-        return _decisionRepository.findByEcli(ecli);
-    }
-
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/getAll",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public Iterable<Decision> getAllDecision() {
-        Iterable<Decision> all = _decisionRepository.findAll();
-        System.out.println("lel");
-        return null;
-    }
-
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/deleteAll",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public String deleteTheDB() {
-        _decisionRepository.deleteAll();
-        return "All deleted";
-    }
-
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/testNetwork",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public String testNetwork() {
-        ArrayList<Decision> decs = new ArrayList<>();
-        //ArrayList<Decision> all = (ArrayList<Decision>) _decisionRepository.findAll();
-        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
-        //ArrayList<Decision> bgh = _decisionRepository.findByCourtType("BGH");
-        //ArrayList<Decision> bverwg = _decisionRepository.findByCourtType("BVerwG");
-        //ArrayList<Decision> BFH = _decisionRepository.findByCourtType("BFH");
-        //ArrayList<Decision> bag = _decisionRepository.findByCourtType("BAG");
-        //ArrayList<Decision> bsg = _decisionRepository.findByCourtType("BSG");
-        //ArrayList<Decision> bpatg = _decisionRepository.findByCourtType("BPatG");
-
-        decs.addAll(bverfg);
-        //decs.addAll(bgh);
-        NetworkController networkController = new NetworkController();
-        networkController.createNetwork(decs);
-        return "Done.";
-    }
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/computeCluster",
+            path = "/computeNetworkOperations",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String computeCluster() {
-        //ArrayList<Decision> decs = new ArrayList<>();
-        //TODO change to findAll
 
-
+        // Crawls the decisions locally, as we cant crawl that much decisions from ES at time
         System.out.println("Crawl all Decisions...");
         ArrayList<String> decisionIDs = new ArrayList<>();
         File decision_folder = new File("../Resources/Decisions");
@@ -216,35 +184,16 @@ public class DecisionController {
             decisionIDs.add(files[i].getName().split("\\.")[0]);
         }
 
+        // Maps the decision documents to decision objects
         System.out.println("Start Mapping...");
         DataMapper dataMapper = new DataMapper();
         ArrayList<Decision> decs = dataMapper.mapDecisionObjects(decisionIDs);
         System.out.println("Decisions Mapped successfully");
 
-
-        //ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
-        /*
-        ArrayList<Decision> bgh = _decisionRepository.findByCourtType("BGH");
-        ArrayList<Decision> bverwg = _decisionRepository.findByCourtType("BVerwG");
-        ArrayList<Decision> BFH = _decisionRepository.findByCourtType("BFH");
-        ArrayList<Decision> bag = _decisionRepository.findByCourtType("BAG");
-        ArrayList<Decision> bsg = _decisionRepository.findByCourtType("BSG");
-        ArrayList<Decision> bpatg = _decisionRepository.findByCourtType("BPatG");
-
-
-        decs.addAll(bgh);
-        decs.addAll(bverwg);
-        decs.addAll(BFH);
-        decs.addAll(bag);
-        decs.addAll(bsg);
-        decs.addAll(bpatg);
-        */
-
-        //decs.addAll(bverfg);
-
+        //Decision Map, to find the decision information easy by docketNumber
         HashMap<String, Decision> decMap = new HashMap<>();
 
-
+        // Replace the brackets of the docketnumber string, because there could be more than one docketnumber (array)
         for (Decision d : decs) {
             String docketNumber = d.getDocketNumber().toString();
             docketNumber = docketNumber.replaceAll("\\[", "");
@@ -252,20 +201,26 @@ public class DecisionController {
             decMap.put(docketNumber, d);
         }
 
-
-        //decs.addAll(bgh);
+        // Starts the Networkcontroller to create the decision network and to perform network operations
         NetworkController networkController = new NetworkController();
         Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
+        //Generates the Pagerank
         Map<String, Double> pagerank = networkController.generatePageRank(network);
+
+        // paused Operations to reduce time issues
         //networkController.generateDegrees(network);
         //Map<String, Double> closeness = networkController.generateClosenessCentrality(network);
         //Map<String, Double> betweenness = networkController.generateBetweennessCentrylity(network);
+
         Map<String, Double> clusteringCoeffizient = networkController.generateClusteringCoeffizient(network);
         List<Set<String>> cw_cluster = networkController.generateClusteringWithCW(network);
+
         //List<Set<String>> mcl_clusters = networkController.generateClusteringwithMCL(network);
 
+        // List for all cluster (sub)graphs of the network
         ArrayList<Graph<String, DefaultEdge>> cluster_graphs = new ArrayList<>();
 
+        // We only save the clusters if they have 3 nodes or more
         for (Set<String> cluster : cw_cluster) {
             if (cluster.size() >= 3) {
 
@@ -282,14 +237,17 @@ public class DecisionController {
                     }
                 }
 
+                // Creates a Subgraph for every cluster
                 Graph<String, DefaultEdge> cluster_subgraph = new AsSubgraph(network, clusterVertices, null);
                 cluster_graphs.add(cluster_subgraph);
             }
 
         }
 
+        // The folder, where we save the clusters
         File folder = new File("src/main/resources/networks");
 
+        // We delete the old cluster graphs
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
@@ -297,6 +255,7 @@ public class DecisionController {
         }
 
         int amount = 0;
+        // Now we save every cluster graph to the filesystem and we update the pagerank and the clusterID in the elasticsearch
         for (int i = 0; i < cluster_graphs.size(); i++) {
             //String regular_path = "../Resources/Cluster/";
             String regular_path = "src/main/resources/networks/";
@@ -308,20 +267,21 @@ public class DecisionController {
                 if (decision != null) {
                     decision.setClusterName(String.valueOf(i));
                     decision.setPageRank(pagerank.get(s));
-                    // TODO centralities
-                    //_decisionRepository.save(decision);
+                    _decisionRepository.save(decision);
                 }
 
             }
 
             String path = regular_path + "graph_cluster_" + i + ".json ";
 
+            // The network controller saves the Graphs as .JSON files to the folder
             networkController.saveGraphToFile(cluster_graphs.get(i), path);
         }
 
-        // Add Court Data to Files
+        // Now we add the court Data to Files to have the possibility to color them in the frontend
         File folder1 = new File("src/main/resources/networks");
 
+        // For every graph file we read the object
         for (File f : folder1.listFiles()) {
             String fileName = f.getName();
             BufferedReader br;
@@ -348,12 +308,15 @@ public class DecisionController {
                     jsonObject.put("court", current_decision.getCourtType());
                     jsonObject.put("pageRank", current_decision.getPageRank());
                 } else {
+                    // If the decision is not in the database, we set the value to NID, so the decision will be
+                    // treated as a non-corpus-decision
                     jsonObject.put("court", "NID");
                     jsonObject.put("pageRank", "NID");
                 }
 
             }
 
+            // We write the file down to the folder again
             try {
                 FileWriter fileWriter = new FileWriter("src/main/resources/networks/" + fileName);
                 fileWriter.write(obj.toString());
@@ -367,38 +330,11 @@ public class DecisionController {
         return amount + " Clusters computed";
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/doAnalysis",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public String doAnalysis() {
-        ArrayList<Decision> decs = new ArrayList<>();
-        ArrayList<Decision> bverfg = _decisionRepository.findByCourtType("BVerfG");
-        decs.addAll(bverfg);
-        //decs.addAll(bgh);
-        NetworkController networkController = new NetworkController();
-        Graph<String, DefaultEdge> network = networkController.createNetwork(decs);
 
-        Analysis analysis = new Analysis(network);
-
-        return "Analysis done.";
-    }
-
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/decision",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public Optional<Decision> getDecision(@RequestParam String docketnumber, ModelMap model) {
-
-        Optional<Decision> decision = _decisionRepository.findByDocketnumber(docketnumber);
-        model.addAttribute("message", "hello");
-        return decision;
-    }
-
-
+    /**
+     * Gets all existing Cluster Graph IDs
+     * @return the list of cluster IDs (unsorted)
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/getCl",
@@ -413,11 +349,15 @@ public class DecisionController {
             cluster_names.add(filename);
         }
 
-        //Collections.sort(cluster_names, (v, v1) -> v.substring(13, 16).compareTo(v1));
         return cluster_names;
     }
 
 
+    /**
+     * Gets the nodes and the Edges of a cluster with a specific Name
+     * @param cl the clusterName
+     * @return the cluster information
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/getClData",
@@ -444,6 +384,11 @@ public class DecisionController {
     }
 
 
+    /**
+     * Performs a search Query on the ES, to search for decisions with a specific term in them
+     * @param term the term you want to search in the index
+     * @return the first ten results of the query
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             path = "/searchQuery",
@@ -451,18 +396,18 @@ public class DecisionController {
     )
     public ArrayList<Decision> testQuery(@RequestParam String term) {
 
-
         ArrayList<Decision> byCustomQuery = _decisionRepository.findByCustomQuery(term);
-        //Query searchQuery = new NativeSearchQueryBuilder().withFilter(regexpQuery("courtType", "BVerfG")).build();
-        //SearchHits<Decision> articles = _decisionRepository.search(searchQuery, Decision.class, IndexCoordinates.of("bundesgerichte_decisions"));
-        // NativeSearchQuery nativeSearchQuery = new NativeSearchQueryBuilder().withFields("courtType", "docketNumber", "clusterName", "pageRank").
         return byCustomQuery;
     }
 
 
+    /**
+     * Performs the call to the NLP Python Service, to do the nlp tasks
+     * @return the message, if the task was succesfull
+     */
     @RequestMapping(
             method = RequestMethod.GET,
-            path = "/testNLP",
+            path = "/doNLPTasks",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String testNLPService() {
@@ -472,6 +417,7 @@ public class DecisionController {
         strings.add("Köln vom 18. April 2007 wird auf Kosten des Klägers zurückgewiesen.");
         strings.add("Apple Inc. introduced a new mobile device today");
         strings.add("Die Gerechtigkeit wurde mit einem Pinguin besprochen.");
+
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
         try {

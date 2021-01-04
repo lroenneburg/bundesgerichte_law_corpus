@@ -1,29 +1,38 @@
-package bundesgerichte_law_corpus;
+package bundesgerichte_law_corpus.elasticsearch;
 
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
 import bundesgerichte_law_corpus.model.Decision;
 import bundesgerichte_law_corpus.model.DecisionSection;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Performs all thymeleaf based REST operations to give information from ES to the web application
+ */
 @Controller
 public class WebController {
 
+    // the ES operations
     @Autowired
     ElasticsearchOperations operations;
 
+    // The decisionRepository to get the decisions from ES
     @Autowired
     DecisionRepository _decisionRepository;
 
+    /**
+     * Gets a specific decision from the ES database and saves the decision objject to a model, which can be
+     * accessed by thymeleaf in the web application
+     * @param docketnumber the docketnumber of the decision
+     * @param model the model which passes the information to thymeleaf
+     * @return the thymeleaf template which is called
+     */
     @GetMapping(value = "/decision")
     public String getDecisionTemplate(@RequestParam(name = "az", required = true) String docketnumber, Model model) {
         Optional<Decision> decision = _decisionRepository.findByDocketnumber(docketnumber);
@@ -79,6 +88,12 @@ public class WebController {
     }
 
 
+    /**
+     * Gets a specific Cluster from the file system to display the cluster Graph in the web application
+     * @param cluster the cluster ID you want to display
+     * @param model the model which passes the information to thymeleaf
+     * @return the thymeleaf template which is called
+     */
     @GetMapping(value = "/cluster")
     public String getClusterTemplate(@RequestParam(name = "id", required = true) String cluster, Model model) {
 
@@ -87,9 +102,16 @@ public class WebController {
     }
 
 
+    /**
+     * Performs a search query to find decisions in the index that contain a specific term
+     * @param term the term you want to search
+     * @param model the model which passes the information to thymeleaf
+     * @return the thymeleaf template which is called
+     */
     @GetMapping(value = "/search")
     public String testQuery(@RequestParam(name = "term", required = true) String term, Model model) {
 
+        // If the queryteam matches a docketnumber of a decision, than we only need to return this decision
         Optional<Decision> searchResultDN = _decisionRepository.findByDocketnumber(term);
         if (!searchResultDN.isEmpty() && searchResultDN.get().getDocketNumber().toString().replaceAll("[\\[\\]]", "").equals(term)) {
             ArrayList<Decision> list = new ArrayList<>();
@@ -97,6 +119,8 @@ public class WebController {
             model.addAttribute("responses", list);
         }
         else {
+            // If the term does not match the docketnumber, we search in the other categories of the
+            // decision for that term
             ArrayList<Decision> searchResults = _decisionRepository.findByCustomQuery(term);
             model.addAttribute("responses", searchResults);
         }
