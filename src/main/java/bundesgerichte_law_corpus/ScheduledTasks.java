@@ -69,7 +69,7 @@ public class ScheduledTasks {
     /**
      * Calls the NLP Tasks
      */
-    @Scheduled(cron = "0 0 2 ? * * *") // Everyday at 2 Am
+    @Scheduled(cron = "0 0 2 ? * *") // Everyday at 2 Am
     public void doNLPTasks() {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create("localhost:5000")).build();
