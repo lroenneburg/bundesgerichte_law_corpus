@@ -246,7 +246,7 @@
         .enter().append("g")
 
       var circles = node.append("circle")
-        .attr("r", 5)
+        .attr("r", function(d) { return determineSize(d.pageRank)})
         .attr("fill", function (d) { return determineColor(d.court); })
         .attr("onclick", function (d) { return "if ('" + d.court + "' !== 'NID') window.location = '/decision?az=" + d.label + "'"; })
         .call(d3.drag()
@@ -379,6 +379,17 @@
         return "grey";
       }
 
+    }
+
+    function determineSize(pageRank) {
+      console.log("test");
+      var size = 5;
+      if(!isNaN(pageRank)) {
+        size = 5 + pageRank * 300000;
+        //size = ((Math.abs(Math.log(pageRank)) - 5) * 2) + 5;
+      }
+      
+      return size;
     }
 
     //});

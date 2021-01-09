@@ -139,7 +139,15 @@
         </div>
         <div class="cluster-div drow">
           <div class="cluster-desc ddesc">Cluster</div>
-          <div class="cluster-value" th:text="${Cluster}"></div>
+          <a th:href="@{'http://localhost:8080/cluster?id=' + ${Cluster}}" class="cluster-value" th:text="${Cluster}"></a>
+        </div>
+        <div class="revision-outcome-div drow">
+          <div class="revision-outcome-desc ddesc">Revisionsausgang</div>
+          <div class="revision-outcome-value"></div>
+        </div>
+        <div class="revision-confidence-div drow">
+          <div class="revision-confidence-desc ddesc">Präzision</div>
+          <div class="revision-confidence-value"></div>
         </div>
         <div class="guidingPrinciple-div drow">
           <div class="guidingPrinciple-desc ddesc">Leitsatz</div>

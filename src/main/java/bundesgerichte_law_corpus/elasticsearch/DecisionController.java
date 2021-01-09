@@ -1,4 +1,5 @@
 package bundesgerichte_law_corpus.elasticsearch;
+
 import bundesgerichte_law_corpus.DataMapper;
 import bundesgerichte_law_corpus.NetworkController;
 import bundesgerichte_law_corpus.elasticsearch.repository.DecisionRepository;
@@ -333,6 +334,7 @@ public class DecisionController {
 
     /**
      * Gets all existing Cluster Graph IDs
+     *
      * @return the list of cluster IDs (unsorted)
      */
     @RequestMapping(
@@ -343,11 +345,19 @@ public class DecisionController {
     public ArrayList<String> getExistingClusters() {
         File folder = new File("src/main/resources/networks");
 
-        ArrayList<String> cluster_names = new ArrayList();
+        ArrayList<Integer> cluster_ids = new ArrayList();
         for (File network_file : folder.listFiles()) {
             String filename = network_file.getName();
-            cluster_names.add(filename);
+            String temp = filename.split("_")[2];
+            int id = Integer.parseInt(temp.split("\\.")[0]);
+            cluster_ids.add(id);
         }
+        Collections.sort(cluster_ids);
+        ArrayList<String> cluster_names = new ArrayList();
+        for (int i : cluster_ids) {
+            cluster_names.add("graph_cluster_" + i + ".json");
+        }
+        System.out.println();
 
         return cluster_names;
     }
@@ -355,6 +365,7 @@ public class DecisionController {
 
     /**
      * Gets the nodes and the Edges of a cluster with a specific Name
+     *
      * @param cl the clusterName
      * @return the cluster information
      */
@@ -365,6 +376,7 @@ public class DecisionController {
     )
     public String getClusterInformation(@RequestParam String cl) {
         File file = new File("src/main/resources/networks/" + cl);
+        System.out.println();
         BufferedReader br;
         String obj = "";
         try {
@@ -386,6 +398,7 @@ public class DecisionController {
 
     /**
      * Performs a search Query on the ES, to search for decisions with a specific term in them
+     *
      * @param term the term you want to search in the index
      * @return the first ten results of the query
      */
@@ -403,6 +416,7 @@ public class DecisionController {
 
     /**
      * Performs the call to the NLP Python Service, to do the nlp tasks
+     *
      * @return the message, if the task was succesfull
      */
     @RequestMapping(

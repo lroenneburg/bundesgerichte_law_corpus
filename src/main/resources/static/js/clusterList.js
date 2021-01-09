@@ -31,11 +31,12 @@ function displayAllClusters() {
     var array = JSON.parse(output);
 
     console.log(array);
-    
-    //var array = ["graph_cluster_0.json", "graph_cluster_10.json", "graph_cluster_12.json"]
+
 
     var unique = Array.from(new Set(array));
     //array = array.sort();
+    array = array.slice(10,100);
+
 
     list_container = document.getElementById("view-container");
 
@@ -53,7 +54,7 @@ function displayAllClusters() {
         a.appendChild(image_div);
         caption_div.appendChild(inner_caption_div);
         a.appendChild(caption_div);
-        inner_caption_div.appendChild(document.createTextNode(name));
+        inner_caption_div.appendChild(document.createTextNode(id));
         a.setAttribute("class", "tile-wrapper");
         a.setAttribute("onclick", "openCluster(" + id + ")");
         image_div.setAttribute("class", "cluster-image");
